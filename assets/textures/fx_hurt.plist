@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>frames</key>
+		<dict>
+			<key>0753 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,290},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0754 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{514,435},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0755 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{514,290},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0756 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{514,145},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0757 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{514,0},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0758 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,870},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0759 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,725},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0760 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,580},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0761 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,435},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0762 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{514,580},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0763 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,145},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0764 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{257,0},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0765 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,870},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0766 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,725},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0767 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,580},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0768 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,435},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0769 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,290},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0770 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,145},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+			<key>0771 shot.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false/>
+				<key>sourceColorRect</key>
+				<string>{{0,0},{256,144}}</string>
+				<key>sourceSize</key>
+				<string>{256,144}</string>
+			</dict>
+
+		</dict>
+
+		<key>metadata</key>
+		<dict>
+			<key>format</key>
+			<integer>2</integer>
+			<key>size</key>
+			<string>{771,1015}</string>
+			<key>textureFileName</key>
+			<string>fx_hurt.png</string>
+			</dict>
+		</dict>
+</plist>

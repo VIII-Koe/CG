@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "d6a93e92-87fa-4995-9282-9fca5f0a4328",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 128,
+  "height": 128,
+  "platformSettings": {},
+  "subMetas": {
+    "Staff_Sell_Showroom_04": {
+      "ver": "1.0.4",
+      "uuid": "aaee28b3-ec78-45d6-a39a-040683481eb1",
+      "rawTextureUuid": "d6a93e92-87fa-4995-9282-9fca5f0a4328",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -2,
+      "offsetY": 0,
+      "trimX": 16,
+      "trimY": 0,
+      "width": 92,
+      "height": 128,
+      "rawWidth": 128,
+      "rawHeight": 128,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
