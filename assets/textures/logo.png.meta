@@ -9,23 +9,32 @@
   "packable": true,
   "width": 1080,
   "height": 1080,
-  "platformSettings": {},
+  "platformSettings": {
+    "default": {
+      "formats": [
+        {
+          "name": "png",
+          "quality": 80
+        }
+      ]
+    }
+  },
   "subMetas": {
     "logo": {
       "ver": "1.0.4",
-      "uuid": "2e488142-25b2-4322-afee-790b35e39504",
+      "uuid": "4aa7b4c2-8957-4656-a5d1-2df453cc92d9",
       "rawTextureUuid": "c8adb194-44aa-4f37-9699-ee8ad2827648",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
       "offsetX": 0,
-      "offsetY": -56,
+      "offsetY": -28,
       "trimX": 0,
-      "trimY": 162,
-      "width": 1080,
-      "height": 868,
-      "rawWidth": 1080,
-      "rawHeight": 1080,
+      "trimY": 95,
+      "width": 540,
+      "height": 406,
+      "rawWidth": 540,
+      "rawHeight": 540,
       "borderTop": 0,
       "borderBottom": 0,
       "borderLeft": 0,

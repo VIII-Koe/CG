@@ -77,6 +77,9 @@ export default class NewClass extends cc.Component {
     @property(cc.AudioClip)
     saleSound: cc.AudioClip = null;
 
+    @property(cc.AudioClip)
+    carSound: cc.AudioClip = null;
+
     fadeRadius: number = 0.1;
 
     isTransforming: boolean = false;
@@ -89,9 +92,13 @@ export default class NewClass extends cc.Component {
 
     symbol: number = 1;
 
-    speed: number = 3;
+    speed: number = 0.5;
 
     priceCar: number = 5000;
+
+    isClean: boolean = false;
+
+    isPolishing: boolean = false;
 
     guideLbArr = ['Clean the car first', 'Nice!', 'Now let\'s polish the car', 'That\'s great!', 'Next, upgrade the car', 'Perfect!'];
 
@@ -107,7 +114,8 @@ export default class NewClass extends cc.Component {
     }
 
     startScene1() {
-        cc.tween(this.carScene1).set({ position: cc.v3(-600, 350, 0), active: true }).to(0.3, { position: cc.v3(0, -100, 0) }).delay(0.15).call(() => {
+        cc.audioEngine.play(this.carSound,false,1);
+        cc.tween(this.carScene1).set({ position: cc.v3(-600, 350, 0), active: true }).to(0.7, { position: cc.v3(-32, 64, 0) }).delay(0.15).call(() => {
             this.carScene1.getChildByName('buble').active = true;
             this.btnBuy1.active = true;
         }).start();
@@ -117,8 +125,8 @@ export default class NewClass extends cc.Component {
         // Trigger money effect from (-68,11) to (-266,492)
         cc.audioEngine.play(this.clickSound,false,1);
         this.btnBuy1.active = false;
-        this.carScene1.getChildByName('buble').active = true;
-        this.moveMoney(cc.v3(-68, 11, 0), cc.v3(-266, -492, 0), 10);
+        this.carScene1.getChildByName('buble').active = false;
+        this.moveMoney(cc.v3(-68, 11, 0), cc.v3(-196, -328, 0), 10);
     }
 
     moveMoney(start: cc.Vec3, end: cc.Vec3, waveNum: number) {
@@ -156,7 +164,7 @@ export default class NewClass extends cc.Component {
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
                     if (this.money == 5000 && this.carScene1.parent.active == true) {
-                        cc.tween(this.carScene1).delay(0.25).to(0.25, { position: cc.v3(600, -350, 0) }).call(() => {
+                        cc.tween(this.carScene1).delay(0.25).to(0.5, { position: cc.v3(600, -350, 0) }).call(() => {
                             this.startScene2();
                         }).start();
                     }
@@ -213,7 +221,7 @@ export default class NewClass extends cc.Component {
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
                     if (this.money == 5000 && this.carScene1.parent.active == true) {
-                        cc.tween(this.carScene1).delay(0.25).to(0.25, { position: cc.v3(600, -350, 0) }).call(() => {
+                        cc.tween(this.carScene1).delay(0.25).to(0.5, { position: cc.v3(600, -350, 0) }).call(() => {
                             this.startScene2();
                         }).start();
                     }
@@ -230,13 +238,17 @@ export default class NewClass extends cc.Component {
 
     addPriceCar(price: number) {
         this.priceCar += price;
+        if(this.priceCar > 10000){
+            this.priceCar = 10000;
+        }
         this.carScene2.getChildByName('bid').getChildByName('moneylb').getComponent(cc.Label).string = this.priceCar.toString();
     }
 
     startScene2() {
         this.carScene1.parent.active = false;
         this.carScene2.parent.active = true;
-        cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.25, { position: cc.v3(-36, 50, 0) }).delay(0.25).call(() => {
+        cc.audioEngine.play(this.carSound,false,1);
+        cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-36, 50, 0) }).delay(0.25).call(() => {
             this.carScene2.getChildByName('bid').active = true;
             let listBtn = this.carScene2.parent.getChildByName('listBtn');
             cc.tween(listBtn).set({ active: true, scaleY: 0 }).to(0.2, { scaleY: 1 }).call(() => {
@@ -248,7 +260,7 @@ export default class NewClass extends cc.Component {
         }).start();
     }
 
-    showGuide(time: number = 1) {
+    showGuide(time: number = 1.5) {
         this.guideLb.string = this.guideLbArr[this.stepGuide];
         let staff = this.guideLb.node.parent.parent;
         let buble = this.guideLb.node.parent;
@@ -275,7 +287,7 @@ export default class NewClass extends cc.Component {
             this.moveBid(1000);
             btn.getChildByName('shadow').active = true;
             this.btnClean.getChildByName('hand').active = false;
-            this.showGuide(0.5);
+            this.showGuide(0.75);
             cc.audioEngine.play(this.cleanSound,false,1);
         }
         if (this.step == 1) {
@@ -284,7 +296,7 @@ export default class NewClass extends cc.Component {
             this.moveBid(2000);
             btn.getChildByName('shadow').active = true;
             this.btnPolishing.getChildByName('hand').active = false;
-            this.showGuide(0.5);
+            this.showGuide(0.75);
             cc.audioEngine.play(this.polishingSound,false,1);
         }
     }
@@ -297,7 +309,7 @@ export default class NewClass extends cc.Component {
         btn.getChildByName('shadow').active = true;
         this.carIconList[this.step].active = false;
         this.btnUpgrade.getChildByName('hand').active = false;
-        this.showGuide(0.5);
+        this.showGuide(0.75);
         cc.audioEngine.play(this.upgradeSound,false,1);
         this.scheduleOnce(() => {
             cc.tween(this.btnClean.parent).to(0.2, { scaleY: 0 }).call(() => {
@@ -313,22 +325,26 @@ export default class NewClass extends cc.Component {
                 cc.audioEngine.play(this.customerSound,false,1);
                 this.listCustomer.children.forEach((child, index) => {
                     child.active = true;
-                    cc.tween(child).set({ scale: 0, active: true }).to(0.2, { scale: 1 }).start();
+                    cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
                 });
             }).start();
             this.scheduleOnce(() => {
-                this.listCustomer.active = false;
+                this.carScene2.getChildByName('buble').active = false;
                 this.step = 3;
                 this.moveMoney(cc.v3(-266, -492, 0), cc.v3(-68, 11, 0), 10);
                 this.scheduleOnce(()=>{
                     this.saleAnim.active = true;
+                    this.listCustomer.active = false;
                     cc.audioEngine.play(this.saleSound,false,1);
                 },0.5);
                 this.scheduleOnce(()=>{
-                    cc.tween(this.endCard).set({active:true,scale:0}).to(0.2,{scale:1}).start();
-                },2);
-            }, 1);
-        }, 1);
+                    cc.tween(this.endCard).set({active:true,scale:0}).to(0.2,{scale:1}).call(()=>{
+                        this.node.getChildByName('logo').active = false;
+                        this.node.getChildByName('btnDownload').active = false;
+                    }).start();
+                },2.5);
+            }, 3);
+        }, 1.5);
 
     }
     moveBid(money: number) {
@@ -348,7 +364,22 @@ export default class NewClass extends cc.Component {
         }).start();
 
     }
+    setScreenSize(isHorizontal) {
+        let canvas = this.node.getComponent(cc.Canvas);
+        canvas.fitHeight = (isHorizontal) ? true : false;
+        canvas.fitWidth = (isHorizontal) ? false : true;
+    }
+    responsive() {
+        let deviceResolution = cc.view.getFrameSize();
+        if (deviceResolution.width >= deviceResolution.height) {
+            this.setScreenSize(true);
+        }
+        else if (deviceResolution.width < deviceResolution.height) {
+            this.setScreenSize(false);
+        }
+    }
     update(dt) {
+        this.responsive();
         if (!this.isTransforming) return;
         this.carIconList[this.step].getComponent(cc.Sprite).getMaterial(0).setProperty('fade_pct', this.fadePct);
         if (this.fadePct >= 0 && this.fadePct <= 1) {
