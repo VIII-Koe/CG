@@ -6,7 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const { ccclass, property } = cc._decorator;
-
+import Scratch_ticket from './Scratch_ticket';
 @ccclass
 export default class NewClass extends cc.Component {
 
@@ -33,6 +33,15 @@ export default class NewClass extends cc.Component {
     carIconList: cc.Node[] = [];
 
     @property(cc.Node)
+    cleanItem: cc.Node = null;
+
+    @property(cc.Node)
+    polishingItem: cc.Node = null;
+
+    @property(cc.Node)
+    upgradeItem: cc.Node = null;
+
+    @property(cc.Node)
     listCustomer: cc.Node = null;
 
     @property(cc.Node)
@@ -42,10 +51,25 @@ export default class NewClass extends cc.Component {
     btnPolishing: cc.Node = null;
 
     @property(cc.Node)
+    touchNode: cc.Node = null;
+
+    @property(cc.Node)
+    touchNode2: cc.Node = null;
+
+    @property(cc.Node)
     btnUpgrade: cc.Node = null;
 
     @property(cc.Label)
     guideLb: cc.Label = null;
+
+    @property(cc.Node)
+    guideClean: cc.Node = null;
+
+    @property(cc.Node)
+    guidePolishing: cc.Node = null;
+
+    @property(cc.Node)
+    guideUpgrade: cc.Node = null;
 
     @property(cc.Node)
     saleAnim: cc.Node = null;
@@ -100,21 +124,148 @@ export default class NewClass extends cc.Component {
 
     isPolishing: boolean = false;
 
+    isUpgrade: boolean = false;
+
     guideLbArr = ['Clean the car first', 'Nice!', 'Now let\'s polish the car', 'That\'s great!', 'Next, upgrade the car', 'Perfect!'];
 
     stepGuide: number = 0;
+
+    // Variables for scratch ticket functionality
+    private scratchTicket: Scratch_ticket = null;
+    private scratchTicket2: Scratch_ticket = null;
+    private hasCompletedCleaning: boolean = false;
+    private hasCompletedPolishing: boolean = false;
+    private hasCompletedUpgrade: boolean = false;
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start() {
-        cc.audioEngine.play(this.bgSound,true,0.5);
+        cc.audioEngine.play(this.bgSound, true, 0.5);
         this.startScene1();
+        
+        // Setup scratch ticket component
+        if (this.touchNode) {
+            this.scratchTicket = this.touchNode.getComponent(Scratch_ticket);
+        }
+        if (this.touchNode2) {
+            this.scratchTicket2 = this.touchNode2.getComponent(Scratch_ticket);
+        }
+        
+        // Setup canvas touch events for cleanItem movement
+        this.setupCanvasTouchEvents();
+    }
+
+    setupCanvasTouchEvents() {
+        // Add touch events to the main node (canvas) for cleanItem movement
+        this.node.on(cc.Node.EventType.TOUCH_START, this.onCanvasTouchStart, this);
+        this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onCanvasTouchMove, this);
+        this.node.on(cc.Node.EventType.TOUCH_END, this.onCanvasTouchEnd, this);
+        this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onCanvasTouchEnd, this);
+    }
+
+    onCanvasTouchStart(event: cc.Event.EventTouch) {
+        this.handleCanvasTouch(event);
+    }
+
+    onCanvasTouchMove(event: cc.Event.EventTouch) {
+        this.handleCanvasTouch(event);
+    }
+
+    handleCanvasTouch(event: cc.Event.EventTouch) {
+        let worldPos = event.getLocation();
+        let nodePos = this.node.convertToNodeSpaceAR(worldPos);
+        
+        // Handle cleanItem movement for step 0
+        if (this.step === 0 && this.isClean && this.cleanItem && this.cleanItem.active) {
+            this.cleanItem.position = cc.v3(nodePos.x, nodePos.y, 0);
+            
+            // Check if touch is within touchNode bounds and manually trigger scratch
+            if (this.touchNode && this.touchNode.active && this.scratchTicket) {
+                if (this.isPointInNode(worldPos, this.touchNode)) {
+                    // Create a fake event with the same structure as original touch event
+                    this.triggerScratchEvent(this.scratchTicket, worldPos);
+                    
+                    // Hide guide and play sound on first touch
+                    if (this.guideClean && this.guideClean.active) {
+                        this.guideClean.active = false;
+                        cc.audioEngine.playMusic(this.cleanSound, true);
+                    }
+                }
+            }
+        }
+        
+        // Handle polishingItem movement for step 1
+        if (this.step === 1 && this.isPolishing && this.polishingItem && this.polishingItem.active) {
+            this.polishingItem.position = cc.v3(nodePos.x, nodePos.y, 0);
+            
+            // Check if touch is within touchNode2 bounds and manually trigger scratch
+            if (this.touchNode2 && this.touchNode2.active && this.scratchTicket2) {
+                if (this.isPointInNode(worldPos, this.touchNode2)) {
+                    // Create a fake event with the same structure as original touch event
+                    this.triggerScratchEvent(this.scratchTicket2, worldPos);
+                    
+                    // Hide guide and play sound on first touch
+                    if (this.guidePolishing && this.guidePolishing.active) {
+                        this.guidePolishing.active = false;
+                        cc.audioEngine.playMusic(this.polishingSound, true);
+                    }
+                }
+            }
+        }
+
+        if(this.step == 2 && this.isUpgrade && this.upgradeItem && this.upgradeItem.active) {
+            this.upgradeItem.position = cc.v3(nodePos.x, nodePos.y, 0);
+            if (this.guideUpgrade && this.guideUpgrade.active) {
+                this.guideUpgrade.active = false;
+            }
+            
+            // Check if upgradeItem is dragged into carIconList[2] area
+            if (this.carIconList[2] && this.carIconList[2].active && !this.hasCompletedUpgrade) {
+                if (this.isPointInNode(worldPos, this.carIconList[2])) {
+                    // Trigger upgrade when item is dragged into car area
+                    this.hasCompletedUpgrade = true;
+                    this.triggerUpgrade();
+                }
+            }
+        }
+    }
+
+    triggerScratchEvent(scratchTicket: Scratch_ticket, worldPos: cc.Vec2) {
+        // Create a fake event object that mimics the original touch event
+        let fakeEvent = {
+            getLocation: () => worldPos
+        };
+        
+        // Call the scratch ticket's touchMoveEvent directly with the fake event
+        scratchTicket.touchMoveEvent(fakeEvent);
+    }
+
+    isPointInNode(worldPos: cc.Vec2, targetNode: cc.Node): boolean {
+        // Convert world position to target node's local space
+        let localPos = targetNode.convertToNodeSpaceAR(worldPos);
+        let size = targetNode.getContentSize();
+        
+        // Check if point is within node bounds
+        return localPos.x >= -size.width/2 && localPos.x <= size.width/2 &&
+               localPos.y >= -size.height/2 && localPos.y <= size.height/2;
+    }
+
+    onCanvasTouchEnd(event: cc.Event.EventTouch) {
+        // Optional: Handle touch end if needed
+    }
+
+    onDestroy() {
+        // Cleanup canvas touch events
+        this.node.off(cc.Node.EventType.TOUCH_START, this.onCanvasTouchStart, this);
+        this.node.off(cc.Node.EventType.TOUCH_MOVE, this.onCanvasTouchMove, this);
+        this.node.off(cc.Node.EventType.TOUCH_END, this.onCanvasTouchEnd, this);
+        this.node.off(cc.Node.EventType.TOUCH_CANCEL, this.onCanvasTouchEnd, this);
     }
 
     startScene1() {
-        cc.audioEngine.play(this.carSound,false,1);
+        cc.audioEngine.play(this.carSound, false, 1);
         cc.tween(this.carScene1).set({ position: cc.v3(-600, 350, 0), active: true }).to(0.7, { position: cc.v3(-32, 64, 0) }).delay(0.15).call(() => {
             this.carScene1.getChildByName('buble').active = true;
             this.btnBuy1.active = true;
@@ -123,7 +274,7 @@ export default class NewClass extends cc.Component {
 
     buyCar1() {
         // Trigger money effect from (-68,11) to (-266,492)
-        cc.audioEngine.play(this.clickSound,false,1);
+        cc.audioEngine.play(this.clickSound, false, 1);
         this.btnBuy1.active = false;
         this.carScene1.getChildByName('buble').active = false;
         this.moveMoney(cc.v3(-68, 11, 0), cc.v3(-196, -328, 0), 10);
@@ -216,7 +367,7 @@ export default class NewClass extends cc.Component {
                 if (moneyNode && moneyNode.isValid) {
                     moneyNode.stopAllActions();
                     moneyNode.destroy();
-                    
+
                 }
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
@@ -231,14 +382,14 @@ export default class NewClass extends cc.Component {
     }
 
     addMoney(money: number) {
-        cc.audioEngine.play(this.moneySound,false,0.25);
+        cc.audioEngine.play(this.moneySound, false, 0.4);
         this.money += money;
         this.moneyLabel.string = this.money.toString();
     }
 
     addPriceCar(price: number) {
         this.priceCar += price;
-        if(this.priceCar > 10000){
+        if (this.priceCar > 10000) {
             this.priceCar = 10000;
         }
         this.carScene2.getChildByName('bid').getChildByName('moneylb').getComponent(cc.Label).string = this.priceCar.toString();
@@ -247,7 +398,7 @@ export default class NewClass extends cc.Component {
     startScene2() {
         this.carScene1.parent.active = false;
         this.carScene2.parent.active = true;
-        cc.audioEngine.play(this.carSound,false,1);
+        cc.audioEngine.play(this.carSound, false, 1);
         cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-36, 50, 0) }).delay(0.25).call(() => {
             this.carScene2.getChildByName('bid').active = true;
             let listBtn = this.carScene2.parent.getChildByName('listBtn');
@@ -274,34 +425,108 @@ export default class NewClass extends cc.Component {
 
     actionCar(event: cc.Event.EventTouch) {
         if (this.isTransforming) return;
-        cc.audioEngine.play(this.clickSound,false,1);
+        cc.audioEngine.play(this.clickSound, false, 1);
         this.isTransforming = true;
         let btn = event.target;
         this.symbol = 1;
         this.speed = 1;
         this.fadePct = 0;
-        this.shadowScene2.active = false;
+        
         if (this.step == 0) {
-            this.carScene2.getChildByName('clean').active = true;
-            this.carScene2.getChildByName('clean').getComponent(cc.Animation).play();
-            this.moveBid(1000);
+            // this.carScene2.getChildByName('clean').active = true;
+            // this.carScene2.getChildByName('clean').getComponent(cc.Animation).play();
+            // this.moveBid(1000);
+            btn.getComponent(cc.Button).enabled = false;
             btn.getChildByName('shadow').active = true;
             this.btnClean.getChildByName('hand').active = false;
-            this.showGuide(0.75);
-            cc.audioEngine.play(this.cleanSound,false,1);
+            // this.showGuide(0.75);
+            // cc.audioEngine.play(this.cleanSound,false,1);
+            
+            // Enable cleaning mode
+            this.isClean = true;
+            this.hasCompletedCleaning = false;
+            if (this.cleanItem) {
+                this.cleanItem.active = true;
+                this.guideClean.active = true;
+            }
+            if (this.touchNode) {
+                this.touchNode.active = true;
+            }
+            
+            // Reset scratch ticket
+            if (this.scratchTicket) {
+                this.scratchTicket.reset();
+            }
         }
         if (this.step == 1) {
-            this.carScene2.getChildByName('polishing').active = true;
-            this.carScene2.getChildByName('polishing').getComponent(cc.Animation).play();
-            this.moveBid(2000);
+            // this.carScene2.getChildByName('polishing').active = true;
+            // this.carScene2.getChildByName('polishing').getComponent(cc.Animation).play();
+            // this.moveBid(2000);
+            btn.getComponent(cc.Button).enabled = false;
             btn.getChildByName('shadow').active = true;
             this.btnPolishing.getChildByName('hand').active = false;
-            this.showGuide(0.75);
-            cc.audioEngine.play(this.polishingSound,false,1);
+            // this.showGuide(0.75);
+            // cc.audioEngine.play(this.polishingSound, false, 1);
+            this.isPolishing = true;
+            this.hasCompletedPolishing = false;
+            if (this.polishingItem) {
+                this.polishingItem.active = true;
+                this.guidePolishing.active = true;
+            }
+            if(this.touchNode2) {
+                this.touchNode2.active = true;
+            }
+            if(this.scratchTicket2) {
+                this.scratchTicket2.reset();
+            }
         }
+        if(this.step == 2) {
+            btn.getComponent(cc.Button).enabled = false;
+            btn.getChildByName('shadow').active = true;
+            this.btnUpgrade.getChildByName('hand').active = false;
+            this.upgradeItem.active = true;
+            this.guideUpgrade.active = true;
+            this.isUpgrade = true;
+            this.hasCompletedUpgrade = false;
+            }
+        }
+    nextStep() {
+        this.shadowScene2.active = false;
+        if (this.step == 0) {
+            this.showGuide(0.75);
+            this.moveBid(1000);
+            this.cleanItem.active = false;
+            this.touchNode.active = false;
+            this.carIconList[0].active = false;
+            cc.audioEngine.stopMusic();
+            this.scheduleOnce(() => {
+                this.showGuide(1);
+                this.btnClean.getComponent(cc.Button).enabled = false;
+                this.btnPolishing.getComponent(cc.Button).enabled = true;
+                this.btnPolishing.getChildByName('hand').active = true;
+                this.shadowScene2.active = true;
+            }, 0.75);
+        }
+        if(this.step == 1) {
+            this.moveBid(2000);
+            this.showGuide(0.75);
+            this.polishingItem.active = false;
+            this.touchNode2.active = false;
+            this.carIconList[1].active = false;
+            cc.audioEngine.stopMusic();
+            this.scheduleOnce(() => {
+                this.showGuide(1);
+                this.btnPolishing.getComponent(cc.Button).enabled = false;
+                this.btnUpgrade.getComponent(cc.Button).enabled = true;
+                this.btnUpgrade.getChildByName('hand').active = true;
+                this.shadowScene2.active = true;
+            }, 0.75);
+        }
+        this.step++;
+
     }
     upgradeCar(event: cc.Event.EventTouch) {
-        cc.audioEngine.play(this.clickSound,false,1);
+        cc.audioEngine.play(this.clickSound, false, 1);
         this.shadowScene2.active = false;
         this.carScene2.getChildByName('upgrade').active = true;
         this.moveBid(2000);
@@ -310,19 +535,25 @@ export default class NewClass extends cc.Component {
         this.carIconList[this.step].active = false;
         this.btnUpgrade.getChildByName('hand').active = false;
         this.showGuide(0.75);
-        cc.audioEngine.play(this.upgradeSound,false,1);
+        cc.audioEngine.play(this.upgradeSound, false, 1);
         this.scheduleOnce(() => {
             cc.tween(this.btnClean.parent).to(0.2, { scaleY: 0 }).call(() => {
                 this.btnClean.parent.active = false;
             }).start();
             let bid = this.carScene2.getChildByName('bid');
             let buble = this.carScene2.getChildByName('buble');
+            let aurora = this.carScene2.getChildByName('aura');
+            let title = this.carScene2.getChildByName('title');
+            this.shadowScene2.active = true;
             cc.tween(bid).to(0.2, { scaleY: 0 }).call(() => {
                 bid.active = false;
             }).start();
-            cc.tween(buble).to(0.2, { scaleY: 1 }).call(() => {
+            aurora.active = true;
+            cc.tween(title).set({active:true,scale:0}).to(0.2, { scale: 1 }).start();
+            cc.tween(buble).to(0.2, { scaleY: 1 }).delay(1).call(() => {
                 this.listCustomer.active = true;
-                cc.audioEngine.play(this.customerSound,false,1);
+                title.active = false;
+                cc.audioEngine.play(this.customerSound, false, 1);
                 this.listCustomer.children.forEach((child, index) => {
                     child.active = true;
                     cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
@@ -332,21 +563,80 @@ export default class NewClass extends cc.Component {
                 this.carScene2.getChildByName('buble').active = false;
                 this.step = 3;
                 this.moveMoney(cc.v3(-266, -492, 0), cc.v3(-68, 11, 0), 10);
-                this.scheduleOnce(()=>{
+                this.scheduleOnce(() => {
                     this.saleAnim.active = true;
                     this.listCustomer.active = false;
-                    cc.audioEngine.play(this.saleSound,false,1);
-                },0.5);
-                this.scheduleOnce(()=>{
-                    cc.tween(this.endCard).set({active:true,scale:0}).to(0.2,{scale:1}).call(()=>{
+                    cc.audioEngine.play(this.saleSound, false, 1);
+                }, 0.5);
+                this.scheduleOnce(() => {
+                    cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).call(() => {
                         this.node.getChildByName('logo').active = false;
                         this.node.getChildByName('btnDownload').active = false;
                     }).start();
-                },2.5);
-            }, 3);
-        }, 1.5);
+                }, 2.5);
+            }, 4);
+        }, 1);
 
     }
+
+    triggerUpgrade() {
+        cc.audioEngine.play(this.clickSound, false, 1);
+        this.shadowScene2.active = false;
+        this.carScene2.getChildByName('upgrade').active = true;
+        this.moveBid(2000);
+        
+        // Hide upgrade item and disable upgrade mode
+        this.upgradeItem.active = false;
+        this.isUpgrade = false;
+        
+        this.carIconList[this.step].active = false;
+        this.btnUpgrade.getChildByName('hand').active = false;
+        this.btnUpgrade.getComponent(cc.Button).enabled = false;
+        this.btnUpgrade.getChildByName('shadow').active = true;
+        this.showGuide(0.75);
+        cc.audioEngine.play(this.upgradeSound, false, 1);
+        this.scheduleOnce(() => {
+            cc.tween(this.btnClean.parent).to(0.2, { scaleY: 0 }).call(() => {
+                this.btnClean.parent.active = false;
+            }).start();
+            let bid = this.carScene2.getChildByName('bid');
+            let buble = this.carScene2.getChildByName('buble');
+            let aurora = this.carScene2.getChildByName('aura');
+            let title = this.carScene2.getChildByName('title');
+            this.shadowScene2.active = true;
+            cc.tween(bid).to(0.2, { scaleY: 0 }).call(() => {
+                bid.active = false;
+            }).start();
+            aurora.active = true;
+            cc.tween(title).set({active:true,scale:0}).to(0.2, { scale: 1 }).start();
+            cc.tween(buble).to(0.2, { scaleY: 1 }).delay(1).call(() => {
+                this.listCustomer.active = true;
+                title.active = false;
+                cc.audioEngine.play(this.customerSound, false, 1);
+                this.listCustomer.children.forEach((child, index) => {
+                    child.active = true;
+                    cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
+                });
+            }).start();
+            this.scheduleOnce(() => {
+                this.carScene2.getChildByName('buble').active = false;
+                this.step = 3;
+                this.moveMoney(cc.v3(-266, -492, 0), cc.v3(-68, 11, 0), 10);
+                this.scheduleOnce(() => {
+                    this.saleAnim.active = true;
+                    this.listCustomer.active = false;
+                    cc.audioEngine.play(this.saleSound, false, 1);
+                }, 0.5);
+                this.scheduleOnce(() => {
+                    cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).call(() => {
+                        this.node.getChildByName('logo').active = false;
+                        this.node.getChildByName('btnDownload').active = false;
+                    }).start();
+                }, 2.5);
+            }, 4);
+        }, 1);
+    }
+
     moveBid(money: number) {
         this.addMoney(-500);
         this.moveMoney(cc.v3(-265, -375, 0), cc.v3(-265, -265, 0), 4);
@@ -380,35 +670,88 @@ export default class NewClass extends cc.Component {
     }
     update(dt) {
         this.responsive();
-        if (!this.isTransforming) return;
-        this.carIconList[this.step].getComponent(cc.Sprite).getMaterial(0).setProperty('fade_pct', this.fadePct);
-        if (this.fadePct >= 0 && this.fadePct <= 1) {
-            this.fadePct += this.symbol * dt * this.speed;
-        } else {
-            this.fadePct = this.fadePct > 1 ? 1 : 0;
-            this.symbol = -this.symbol;
-            this.isTransforming = false;
-            this.carIconList[this.step].active = false;
-            this.step++;
-            if (this.step == 1) {
-                this.scheduleOnce(() => {
-                    this.showGuide(1);
-                    this.btnClean.getComponent(cc.Button).enabled = false;
-                    this.btnPolishing.getComponent(cc.Button).enabled = true;
-                    this.btnPolishing.getChildByName('hand').active = true;
-                    this.shadowScene2.active = true;
-                }, 0.5);
-            }
-            if (this.step == 2) {
-                this.scheduleOnce(() => {
-                    this.showGuide(1);
-                    this.btnPolishing.getComponent(cc.Button).enabled = false;
-                    this.btnUpgrade.getComponent(cc.Button).enabled = true;
-                    this.btnUpgrade.getChildByName('hand').active = true;
-                    this.shadowScene2.active = true;
-                }, 0.5);
-
+        
+        // Check scratch ticket progress for cleaning step
+        if (this.step === 0 && this.isClean && this.scratchTicket && !this.hasCompletedCleaning) {
+            let progress = this.scratchTicket.progress;
+            if (progress > 45) {
+                // Cleaning completed
+                this.hasCompletedCleaning = true;
+                this.isClean = false;
+                this.isTransforming = false;
+                
+                // Hide clean item and touch node
+                if (this.cleanItem) {
+                    this.cleanItem.active = false;
+                }
+                if (this.touchNode) {
+                    this.touchNode.active = false;
+                }
+                
+                // Hide car icon
+                if (this.carIconList[0]) {
+                    this.carIconList[0].active = false;
+                }
+                
+                // Proceed to next step
+                this.nextStep();
             }
         }
+        if (this.step === 1 && this.isPolishing && this.scratchTicket2 && !this.hasCompletedPolishing) {
+            let progress = this.scratchTicket2.progress;
+            if (progress > 40) {
+                // Polishing completed
+                this.hasCompletedPolishing = true;
+                this.isPolishing = false;
+                this.isTransforming = false;
+
+                // Hide polishing item and touch node
+                if (this.polishingItem) {
+                    this.polishingItem.active = false;
+                }
+                if (this.touchNode2) {
+                    this.touchNode2.active = false;
+                }
+
+                // Hide car icon
+                if (this.carIconList[1]) {
+                    this.carIconList[1].active = false;
+                }
+
+                // Proceed to next step
+                this.nextStep();
+            }
+        }
+        
+        // if (!this.isTransforming) return;
+        // this.carIconList[this.step].getComponent(cc.Sprite).getMaterial(0).setProperty('fade_pct', this.fadePct);
+        // if (this.fadePct >= 0 && this.fadePct <= 1) {
+        //     this.fadePct += this.symbol * dt * this.speed;
+        // } else {
+        //     this.fadePct = this.fadePct > 1 ? 1 : 0;
+        //     this.symbol = -this.symbol;
+        //     this.isTransforming = false;
+        //     this.carIconList[this.step].active = false;
+        //     this.step++;
+        //     if (this.step == 1) {
+        //         this.scheduleOnce(() => {
+        //             this.showGuide(1);
+        //             this.btnClean.getComponent(cc.Button).enabled = false;
+        //             this.btnPolishing.getComponent(cc.Button).enabled = true;
+        //             this.btnPolishing.getChildByName('hand').active = true;
+        //             this.shadowScene2.active = true;
+        //         }, 0.5);
+        //     }
+        //     if (this.step == 2) {
+        //         this.scheduleOnce(() => {
+        //             this.showGuide(1);
+        //             this.btnPolishing.getComponent(cc.Button).enabled = false;
+        //             this.btnUpgrade.getComponent(cc.Button).enabled = true;
+        //             this.btnUpgrade.getChildByName('hand').active = true;
+        //             this.shadowScene2.active = true;
+        //         }, 0.5);
+
+        //     }
+        // }
     }
 }

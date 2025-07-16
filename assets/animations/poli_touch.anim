@@ -1,0 +1,111 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "poli_touch",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.4666666666666667,
+  "sample": 60,
+  "speed": 0.25,
+  "wrapMode": 2,
+  "curveData": {
+    "paths": {
+      "hand": {
+        "comps": {
+          "cc.Sprite": {
+            "spriteFrame": [
+              {
+                "frame": 0,
+                "value": {
+                  "__uuid__": "1d21cdfa-766a-4243-87a6-d56c0718b7f7"
+                }
+              },
+              {
+                "frame": 0.03333333333333333,
+                "value": {
+                  "__uuid__": "d833cff3-efa4-4acd-bc2a-8867254b808d"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "cleanItem": {
+        "props": {
+          "position": [
+            {
+              "frame": 0,
+              "value": [
+                0.22,
+                -446.7,
+                0
+              ]
+            },
+            {
+              "frame": 0.03333333333333333,
+              "value": [
+                0.22,
+                -446.7,
+                0
+              ]
+            }
+          ],
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.03333333333333333,
+              "value": 255
+            }
+          ]
+        }
+      }
+    },
+    "props": {
+      "position": [
+        {
+          "frame": 0,
+          "value": [
+            0,
+            0
+          ],
+          "motionPath": []
+        },
+        {
+          "frame": 0.03333333333333333,
+          "value": [
+            0,
+            0
+          ],
+          "motionPath": []
+        },
+        {
+          "frame": 0.16666666666666666,
+          "value": [
+            -252.572,
+            576,
+            0
+          ]
+        },
+        {
+          "frame": 0.31666666666666665,
+          "value": [
+            91.138,
+            449.604,
+            0
+          ]
+        },
+        {
+          "frame": 0.4666666666666667,
+          "value": [
+            -252.572,
+            576,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "events": []
+}
