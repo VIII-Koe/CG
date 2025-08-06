@@ -1,6 +1,7 @@
 {
-  "ver": "2.3.5",
+  "ver": "2.3.7",
   "uuid": "a74a3c47-d0ff-4fff-bec5-4a0bac53850f",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -12,8 +13,9 @@
   "platformSettings": {},
   "subMetas": {
     "Staff_Sell_Showroom_03": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "fe8f40e3-6ae3-44c2-8a8d-9b30d16170d0",
+      "importer": "sprite-frame",
       "rawTextureUuid": "a74a3c47-d0ff-4fff-bec5-4a0bac53850f",
       "trimType": "auto",
       "trimThreshold": 1,

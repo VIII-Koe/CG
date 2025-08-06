@@ -62,6 +62,9 @@ export default class NewClass extends cc.Component {
     @property(cc.Label)
     guideLb: cc.Label = null;
 
+    @property(cc.Label)
+    cleanLb: cc.Label = null;
+
     @property(cc.Node)
     guideClean: cc.Node = null;
 
@@ -399,7 +402,7 @@ export default class NewClass extends cc.Component {
         this.carScene1.parent.active = false;
         this.carScene2.parent.active = true;
         cc.audioEngine.play(this.carSound, false, 1);
-        cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-36, 50, 0) }).delay(0.25).call(() => {
+        cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-15, 70, 0) }).delay(0.25).call(() => {
             this.carScene2.getChildByName('bid').active = true;
             let listBtn = this.carScene2.parent.getChildByName('listBtn');
             cc.tween(listBtn).set({ active: true, scaleY: 0 }).to(0.2, { scaleY: 1 }).call(() => {
@@ -435,10 +438,14 @@ export default class NewClass extends cc.Component {
         if (this.step == 0) {
             // this.carScene2.getChildByName('clean').active = true;
             // this.carScene2.getChildByName('clean').getComponent(cc.Animation).play();
-            // this.moveBid(1000);
+            // this.moveBid(1000);  
             btn.getComponent(cc.Button).enabled = false;
             btn.getChildByName('shadow').active = true;
             this.btnClean.getChildByName('hand').active = false;
+            let staff = this.guideLb.node.parent.parent;
+            staff.active = false;
+            staff.stopAllActions();
+            this.cleanLb.node.active = true;
             // this.showGuide(0.75);
             // cc.audioEngine.play(this.cleanSound,false,1);
             
@@ -498,6 +505,7 @@ export default class NewClass extends cc.Component {
             this.cleanItem.active = false;
             this.touchNode.active = false;
             this.carIconList[0].active = false;
+            this.cleanLb.node.active = false;
             cc.audioEngine.stopMusic();
             this.scheduleOnce(() => {
                 this.showGuide(1);

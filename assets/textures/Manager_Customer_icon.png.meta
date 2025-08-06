@@ -1,6 +1,7 @@
 {
-  "ver": "2.3.5",
+  "ver": "2.3.7",
   "uuid": "7c3fb9ee-40a9-4954-8f3f-77e111177b7a",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -12,8 +13,9 @@
   "platformSettings": {},
   "subMetas": {
     "Manager_Customer_icon": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "2e3403db-3a1b-4c2b-9652-c0dc005956f6",
+      "importer": "sprite-frame",
       "rawTextureUuid": "7c3fb9ee-40a9-4954-8f3f-77e111177b7a",
       "trimType": "auto",
       "trimThreshold": 1,
