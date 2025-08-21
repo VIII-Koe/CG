@@ -280,7 +280,11 @@ export default class NewClass extends cc.Component {
         cc.audioEngine.play(this.clickSound, false, 1);
         this.btnBuy1.active = false;
         this.carScene1.getChildByName('buble').active = false;
-        this.moveMoney(cc.v3(-68, 11, 0), cc.v3(-196, -328, 0), 10);
+        
+        // Convert carScene1 position to world space, then to moneyLabel's parent space
+        let worldPos = this.carScene1.parent.convertToWorldSpaceAR(this.carScene1.position.add(cc.v3(0,80)));
+        let targetPos = this.moneyLabel.node.parent.convertToNodeSpaceAR(worldPos);
+        this.moveMoney(cc.v3(-68, 11, 0), targetPos, 10);
     }
 
     moveMoney(start: cc.Vec3, end: cc.Vec3, waveNum: number) {
@@ -647,7 +651,9 @@ export default class NewClass extends cc.Component {
 
     moveBid(money: number) {
         this.addMoney(-500);
-        this.moveMoney(cc.v3(-265, -375, 0), cc.v3(-265, -265, 0), 4);
+        let worldPos = this.carScene2.parent.convertToWorldSpaceAR(this.carScene2.position.add(cc.v3(0,80)));
+        let targetPos = this.moneyLabel.node.parent.convertToNodeSpaceAR(worldPos);
+        this.moveMoney(cc.v3(-265, -450, 0), targetPos.add(cc.v3(0,150)), 4);
         let bidNode = this.carScene2.getChildByName('bid');
         bidNode.getChildByName('border_bar').active = true;
         let moneyLb = bidNode.getChildByName('moneylb');
