@@ -1,0 +1,41 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "guide_swipe",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.4166666666666667,
+  "sample": 60,
+  "speed": 0.5,
+  "wrapMode": 2,
+  "curveData": {
+    "props": {
+      "position": [
+        {
+          "frame": 0,
+          "value": [
+            250.789,
+            -433.708,
+            0
+          ]
+        },
+        {
+          "frame": 0.25,
+          "value": [
+            -209.422,
+            -433.708,
+            0
+          ]
+        },
+        {
+          "frame": 0.4166666666666667,
+          "value": [
+            -209.422,
+            -433.708,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "events": []
+}
