@@ -1,9 +1,9 @@
 {
   "title": "CG",
   "packageName": "org.cocos2d.demo",
-  "startScene": "43acb410-8d2c-4566-8655-9cc2b50616ce",
+  "startScene": "d2ff8f6c-c6ca-4ce1-8484-8b436873c2db",
   "excludeScenes": [
-    "d2ff8f6c-c6ca-4ce1-8484-8b436873c2db"
+    "43acb410-8d2c-4566-8655-9cc2b50616ce"
   ],
   "orientation": {
     "landscapeRight": true,

@@ -11,16 +11,16 @@ import Scratch_ticket from './Scratch_ticket';
 export default class NewClass extends cc.Component {
 
     @property(cc.Node)
-    listCar:cc.Node = null;
+    listCar: cc.Node = null;
 
     @property(cc.Node)
-    handSwipe:cc.Node = null;
+    handSwipe: cc.Node = null;
 
     @property(cc.Node)
-    hand:cc.Node = null;
+    hand: cc.Node = null;
 
     @property(cc.Node)
-    scene0:cc.Node = null;
+    scene0: cc.Node = null;
 
     @property(cc.Node)
     carScene1: cc.Node = null;
@@ -159,9 +159,10 @@ export default class NewClass extends cc.Component {
     private isDragging: boolean = false;
     private startTouchPos: cc.Vec2 = cc.Vec2.ZERO;
     private lastTouchPos: cc.Vec2 = cc.Vec2.ZERO;
-    private carPositions: number[] = [0,450, 900, 1350, 1800];
+    private carPositions: number[] = [0, 450, 900, 1350, 1800];
     private isSwipeGesture: boolean = false;
     private touchStartTime: number = 0;
+    private countMove = 0;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -171,7 +172,7 @@ export default class NewClass extends cc.Component {
         cc.audioEngine.play(this.bgSound, true, 0.5);
         // this.startScene1();
         this.initSwipeFeature();
-        
+
         // Setup scratch ticket component
         if (this.touchNode) {
             this.scratchTicket = this.touchNode.getComponent(Scratch_ticket);
@@ -179,25 +180,33 @@ export default class NewClass extends cc.Component {
         if (this.touchNode2) {
             this.scratchTicket2 = this.touchNode2.getComponent(Scratch_ticket);
         }
-        
+
+        this.schedule(() => {
+            this.currentIndex++;
+            if (this.currentIndex >= this.carPositions.length) {
+                this.currentIndex = 0;
+            }
+            this.moveCarsToCenter();
+        }, 1.5, cc.macro.REPEAT_FOREVER, 1)
+
         // Setup canvas touch events for cleanItem movement
-        this.setupCanvasTouchEvents();
+        // this.setupCanvasTouchEvents();
     }
 
     private initSwipeFeature() {
         // Bật touch events cho node chính (cho swipe)
-        this.scene0.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
-        this.scene0.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        this.scene0.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.scene0.on(cc.Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
-        
+        this.scene0.on(cc.Node.EventType.TOUCH_START, this.onCarTouchStart, this);
+        // this.scene0.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.scene0.on(cc.Node.EventType.TOUCH_END, this.onCarTouchEnd, this);
+        this.scene0.on(cc.Node.EventType.TOUCH_CANCEL, this.onCarTouchEnd, this);
+
         // Gắn touch events cho từng node con trong listCar
-        this.setupCarTouchEvents();
+        // this.setupCarTouchEvents();
     }
 
     private setupCarTouchEvents() {
         if (!this.listCar || this.listCar.children.length === 0) return;
-        
+
         this.listCar.children.forEach((child, index) => {
             if (index < this.carPositions.length) {
                 // Bật touch cho từng car node
@@ -216,16 +225,16 @@ export default class NewClass extends cc.Component {
     private onCarTouchEnd(event: cc.Event.EventTouch, carIndex: number) {
         const touchDuration = Date.now() - this.touchStartTime;
         const maxClickDuration = 300; // Thời gian tối đa cho click (ms)
-        
+        this.selectCar();
         // Chỉ xử lý click nếu thời gian touch ngắn và không có swipe gesture
-        if (touchDuration < maxClickDuration && !this.isSwipeGesture) {
-            this.onCarSelected(carIndex);
-        }
+        // if (touchDuration < maxClickDuration && !this.isSwipeGesture) {
+        // this.onCarSelected(carIndex);
+        // }
     }
 
     private onCarSelected(carIndex: number) {
         console.log(`Car ${carIndex} selected!`);
-        
+
         // Chỉ xử lý nếu car được click đang ở vị trí x = 0 (giữa màn hình)
         if (carIndex === this.currentIndex) {
             console.log(`Car ${carIndex} is in center, executing action...`);
@@ -249,18 +258,18 @@ export default class NewClass extends cc.Component {
 
     private onTouchMove(event: cc.Event.EventTouch) {
         if (!this.isDragging) return;
-        
+
         this.lastTouchPos = event.getLocation();
-        
+
         // Tính khoảng cách di chuyển
         const deltaX = Math.abs(this.lastTouchPos.x - this.startTouchPos.x);
         const deltaY = Math.abs(this.lastTouchPos.y - this.startTouchPos.y);
         const minMoveThreshold = 20; // Khoảng cách tối thiểu để xem là swipe
-        
+
         // Nếu di chuyển đủ xa và chủ yếu theo trục X, coi là swipe gesture
         if (deltaX > minMoveThreshold && deltaX > deltaY) {
             this.isSwipeGesture = true;
-            
+
             // Ngăn chặn sự kiện click button khi đang swipe
             event.stopPropagation();
         }
@@ -268,21 +277,21 @@ export default class NewClass extends cc.Component {
 
     private onTouchEnd(event: cc.Event.EventTouch) {
         if (!this.isDragging) return;
-        
+
         this.isDragging = false;
         const touchDuration = Date.now() - this.touchStartTime;
         const deltaX = this.lastTouchPos.x - this.startTouchPos.x;
         const minSwipeDistance = 80; // Khoảng cách tối thiểu để xem là vuốt
         const maxClickDuration = 300; // Thời gian tối đa cho click (ms)
-        
+
         this.handSwipe.active = false;
         this.hand.active = true;
-        
+
         // Kiểm tra xem có phải là swipe gesture không
         if (this.isSwipeGesture && Math.abs(deltaX) > minSwipeDistance) {
             // Ngăn chặn sự kiện click button
             event.stopPropagation();
-            
+
             if (deltaX > 0) {
                 // Vuốt sang phải - chuyển về node trước
                 this.swipeToPrevious();
@@ -294,7 +303,7 @@ export default class NewClass extends cc.Component {
             // Đây là click ngắn, cho phép button xử lý
             // Không làm gì để button có thể nhận sự kiện
         }
-        
+
         // Reset trạng thái
         this.isSwipeGesture = false;
     }
@@ -336,11 +345,14 @@ export default class NewClass extends cc.Component {
         this.listCar.children.forEach((child, index) => {
             if (index < this.carPositions.length) {
                 // Tính toán vị trí mới dựa trên index hiện tại
-                const targetX = this.carPositions[index] - this.carPositions[this.currentIndex];
-                
+                let targetX = child.x - 450;
                 // Sử dụng cc.tween để tạo hiệu ứng di chuyển mượt mà
                 cc.tween(child)
-                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' })
+                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' }).call(() => {
+                        if (child.x < -450) {
+                            child.x = child.x * -1 + 450;
+                        }
+                    })
                     .start();
             }
         });
@@ -391,17 +403,17 @@ export default class NewClass extends cc.Component {
     handleCanvasTouch(event: cc.Event.EventTouch) {
         let worldPos = event.getLocation();
         let nodePos = this.node.convertToNodeSpaceAR(worldPos);
-        
+
         // Handle cleanItem movement for step 0
         if (this.step === 0 && this.isClean && this.cleanItem && this.cleanItem.active) {
             this.cleanItem.position = cc.v3(nodePos.x, nodePos.y, 0);
-            
+
             // Check if touch is within touchNode bounds and manually trigger scratch
             if (this.touchNode && this.touchNode.active && this.scratchTicket) {
                 if (this.isPointInNode(worldPos, this.touchNode)) {
                     // Create a fake event with the same structure as original touch event
                     this.triggerScratchEvent(this.scratchTicket, worldPos);
-                    
+
                     // Hide guide and play sound on first touch
                     if (this.guideClean && this.guideClean.active) {
                         this.guideClean.active = false;
@@ -410,17 +422,17 @@ export default class NewClass extends cc.Component {
                 }
             }
         }
-        
+
         // Handle polishingItem movement for step 1
         if (this.step === 1 && this.isPolishing && this.polishingItem && this.polishingItem.active) {
             this.polishingItem.position = cc.v3(nodePos.x, nodePos.y, 0);
-            
+
             // Check if touch is within touchNode2 bounds and manually trigger scratch
             if (this.touchNode2 && this.touchNode2.active && this.scratchTicket2) {
                 if (this.isPointInNode(worldPos, this.touchNode2)) {
                     // Create a fake event with the same structure as original touch event
                     this.triggerScratchEvent(this.scratchTicket2, worldPos);
-                    
+
                     // Hide guide and play sound on first touch
                     if (this.guidePolishing && this.guidePolishing.active) {
                         this.guidePolishing.active = false;
@@ -430,12 +442,12 @@ export default class NewClass extends cc.Component {
             }
         }
 
-        if(this.step == 2 && this.isUpgrade && this.upgradeItem && this.upgradeItem.active) {
+        if (this.step == 2 && this.isUpgrade && this.upgradeItem && this.upgradeItem.active) {
             this.upgradeItem.position = cc.v3(nodePos.x, nodePos.y, 0);
             if (this.guideUpgrade && this.guideUpgrade.active) {
                 this.guideUpgrade.active = false;
             }
-            
+
             // Check if upgradeItem is dragged into carIconList[2] area
             if (this.carIconList[2] && this.carIconList[2].active && !this.hasCompletedUpgrade) {
                 if (this.isPointInNode(worldPos, this.carIconList[2])) {
@@ -452,7 +464,7 @@ export default class NewClass extends cc.Component {
         let fakeEvent = {
             getLocation: () => worldPos
         };
-        
+
         // Call the scratch ticket's touchMoveEvent directly with the fake event
         scratchTicket.touchMoveEvent(fakeEvent);
     }
@@ -461,10 +473,10 @@ export default class NewClass extends cc.Component {
         // Convert world position to target node's local space
         let localPos = targetNode.convertToNodeSpaceAR(worldPos);
         let size = targetNode.getContentSize();
-        
+
         // Check if point is within node bounds
-        return localPos.x >= -size.width/2 && localPos.x <= size.width/2 &&
-               localPos.y >= -size.height/2 && localPos.y <= size.height/2;
+        return localPos.x >= -size.width / 2 && localPos.x <= size.width / 2 &&
+            localPos.y >= -size.height / 2 && localPos.y <= size.height / 2;
     }
 
     onCanvasTouchEnd(event: cc.Event.EventTouch) {
@@ -492,9 +504,9 @@ export default class NewClass extends cc.Component {
         cc.audioEngine.play(this.clickSound, false, 1);
         this.btnBuy1.active = false;
         this.carScene1.getChildByName('buble').active = false;
-        
+
         // Convert carScene1 position to world space, then to moneyLabel's parent space
-        let worldPos = this.carScene1.parent.convertToWorldSpaceAR(this.carScene1.position.add(cc.v3(0,80)));
+        let worldPos = this.carScene1.parent.convertToWorldSpaceAR(this.carScene1.position.add(cc.v3(0, 80)));
         let targetPos = this.moneyLabel.node.parent.convertToNodeSpaceAR(worldPos);
         this.moveMoney(cc.v3(-68, 11, 0), targetPos, 10);
     }
@@ -650,7 +662,7 @@ export default class NewClass extends cc.Component {
         this.symbol = 1;
         this.speed = 1;
         this.fadePct = 0;
-        
+
         if (this.step == 0) {
             // this.carScene2.getChildByName('clean').active = true;
             // this.carScene2.getChildByName('clean').getComponent(cc.Animation).play();
@@ -664,7 +676,7 @@ export default class NewClass extends cc.Component {
             this.cleanLb.node.active = true;
             // this.showGuide(0.75);
             // cc.audioEngine.play(this.cleanSound,false,1);
-            
+
             // Enable cleaning mode
             this.isClean = true;
             this.hasCompletedCleaning = false;
@@ -675,7 +687,7 @@ export default class NewClass extends cc.Component {
             if (this.touchNode) {
                 this.touchNode.active = true;
             }
-            
+
             // Reset scratch ticket
             if (this.scratchTicket) {
                 this.scratchTicket.reset();
@@ -696,14 +708,14 @@ export default class NewClass extends cc.Component {
                 this.polishingItem.active = true;
                 this.guidePolishing.active = true;
             }
-            if(this.touchNode2) {
+            if (this.touchNode2) {
                 this.touchNode2.active = true;
             }
-            if(this.scratchTicket2) {
+            if (this.scratchTicket2) {
                 this.scratchTicket2.reset();
             }
         }
-        if(this.step == 2) {
+        if (this.step == 2) {
             btn.getComponent(cc.Button).enabled = false;
             btn.getChildByName('shadow').active = true;
             this.btnUpgrade.getChildByName('hand').active = false;
@@ -711,8 +723,8 @@ export default class NewClass extends cc.Component {
             this.guideUpgrade.active = true;
             this.isUpgrade = true;
             this.hasCompletedUpgrade = false;
-            }
         }
+    }
     nextStep() {
         this.shadowScene2.active = false;
         if (this.step == 0) {
@@ -731,7 +743,7 @@ export default class NewClass extends cc.Component {
                 this.shadowScene2.active = true;
             }, 0.75);
         }
-        if(this.step == 1) {
+        if (this.step == 1) {
             this.moveBid(2000);
             this.showGuide(0.75);
             this.polishingItem.active = false;
@@ -773,7 +785,7 @@ export default class NewClass extends cc.Component {
                 bid.active = false;
             }).start();
             aurora.active = true;
-            cc.tween(title).set({active:true,scale:0}).to(0.2, { scale: 1 }).start();
+            cc.tween(title).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).start();
             cc.tween(buble).to(0.2, { scaleY: 1 }).delay(1).call(() => {
                 this.listCustomer.active = true;
                 title.active = false;
@@ -808,11 +820,11 @@ export default class NewClass extends cc.Component {
         this.shadowScene2.active = false;
         this.carScene2.getChildByName('upgrade').active = true;
         this.moveBid(2000);
-        
+
         // Hide upgrade item and disable upgrade mode
         this.upgradeItem.active = false;
         this.isUpgrade = false;
-        
+
         this.carIconList[this.step].active = false;
         this.btnUpgrade.getChildByName('hand').active = false;
         this.btnUpgrade.getComponent(cc.Button).enabled = false;
@@ -832,7 +844,7 @@ export default class NewClass extends cc.Component {
                 bid.active = false;
             }).start();
             aurora.active = true;
-            cc.tween(title).set({active:true,scale:0}).to(0.2, { scale: 1 }).start();
+            cc.tween(title).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).start();
             cc.tween(buble).to(0.2, { scaleY: 1 }).delay(1).call(() => {
                 this.listCustomer.active = true;
                 title.active = false;
@@ -863,9 +875,9 @@ export default class NewClass extends cc.Component {
 
     moveBid(money: number) {
         this.addMoney(-500);
-        let worldPos = this.carScene2.parent.convertToWorldSpaceAR(this.carScene2.position.add(cc.v3(0,80)));
+        let worldPos = this.carScene2.parent.convertToWorldSpaceAR(this.carScene2.position.add(cc.v3(0, 80)));
         let targetPos = this.moneyLabel.node.parent.convertToNodeSpaceAR(worldPos);
-        this.moveMoney(cc.v3(-265, -450, 0), targetPos.add(cc.v3(0,150)), 4);
+        this.moveMoney(cc.v3(-265, -450, 0), targetPos.add(cc.v3(0, 150)), 4);
         let bidNode = this.carScene2.getChildByName('bid');
         bidNode.getChildByName('border_bar').active = true;
         let moneyLb = bidNode.getChildByName('moneylb');
@@ -896,7 +908,7 @@ export default class NewClass extends cc.Component {
     }
     update(dt) {
         this.responsive();
-        
+
         // Check scratch ticket progress for cleaning step
         if (this.step === 0 && this.isClean && this.scratchTicket && !this.hasCompletedCleaning) {
             let progress = this.scratchTicket.progress;
@@ -905,7 +917,7 @@ export default class NewClass extends cc.Component {
                 this.hasCompletedCleaning = true;
                 this.isClean = false;
                 this.isTransforming = false;
-                
+
                 // Hide clean item and touch node
                 if (this.cleanItem) {
                     this.cleanItem.active = false;
@@ -913,12 +925,12 @@ export default class NewClass extends cc.Component {
                 if (this.touchNode) {
                     this.touchNode.active = false;
                 }
-                
+
                 // Hide car icon
                 if (this.carIconList[0]) {
                     this.carIconList[0].active = false;
                 }
-                
+
                 // Proceed to next step
                 this.nextStep();
             }
@@ -948,7 +960,7 @@ export default class NewClass extends cc.Component {
                 this.nextStep();
             }
         }
-        
+
         // if (!this.isTransforming) return;
         // this.carIconList[this.step].getComponent(cc.Sprite).getMaterial(0).setProperty('fade_pct', this.fadePct);
         // if (this.fadePct >= 0 && this.fadePct <= 1) {

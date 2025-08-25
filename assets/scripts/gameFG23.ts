@@ -44,10 +44,17 @@ export default class NewClass extends cc.Component {
     }
 
     start() {
-        this.setupCarPositions();
-        this.centerCurrentCar();
+        // this.setupCarPositions();
+        // this.centerCurrentCar();
         // Gọi lại để đảm bảo touch events được gắn đúng cách
         this.setupCarTouchEvents();
+        this.schedule(() => {
+            this.currentIndex++;
+            if (this.currentIndex >= this.carPositions.length) {
+                this.currentIndex = 0;
+            }
+            this.moveCarsToCenter();
+        }, 1.5, cc.macro.REPEAT_FOREVER, 1)
     }
 
     selectCar() {
@@ -73,10 +80,10 @@ export default class NewClass extends cc.Component {
 
     private initSwipeFeature() {
         // Bật touch events cho node chính (cho swipe)
-        this.node.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
-        this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+        this.node.on(cc.Node.EventType.TOUCH_START, this.onCarTouchStart, this);
+        // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.node.on(cc.Node.EventType.TOUCH_END, this.onCarTouchEnd, this);
+        this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onCarTouchEnd, this);
         
         // Gắn touch events cho từng node con trong listCar
         this.setupCarTouchEvents();
@@ -103,11 +110,11 @@ export default class NewClass extends cc.Component {
     private onCarTouchEnd(event: cc.Event.EventTouch, carIndex: number) {
         const touchDuration = Date.now() - this.touchStartTime;
         const maxClickDuration = 300; // Thời gian tối đa cho click (ms)
-        
+        this.selectCar();
         // Chỉ xử lý click nếu thời gian touch ngắn và không có swipe gesture
-        if (touchDuration < maxClickDuration && !this.isSwipeGesture) {
-            this.onCarSelected(carIndex);
-        }
+        // if (touchDuration < maxClickDuration && !this.isSwipeGesture) {
+        //     this.onCarSelected(carIndex);
+        // }
     }
 
     private onCarSelected(carIndex: number) {
@@ -223,11 +230,15 @@ export default class NewClass extends cc.Component {
         this.listCar.children.forEach((child, index) => {
             if (index < this.carPositions.length) {
                 // Tính toán vị trí mới dựa trên index hiện tại
-                const targetX = this.carPositions[index] - this.carPositions[this.currentIndex];
+                const targetX = child.x - 700;
                 
                 // Sử dụng cc.tween để tạo hiệu ứng di chuyển mượt mà
                 cc.tween(child)
-                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' })
+                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' }).call(()=>{
+                        if(child.x < -700) {
+                            child.x = child.x * -1;
+                        }
+                    })
                     .start();
             }
         });
