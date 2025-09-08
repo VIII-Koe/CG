@@ -382,6 +382,7 @@ export default class NewClass extends cc.Component {
         this.scene0.off(cc.Node.EventType.TOUCH_MOVE);
         this.scene0.off(cc.Node.EventType.TOUCH_END);
         this.scene0.off(cc.Node.EventType.TOUCH_CANCEL);
+        this.setupCanvasTouchEvents();
     }
 
     setupCanvasTouchEvents() {

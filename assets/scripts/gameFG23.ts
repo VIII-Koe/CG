@@ -5,28 +5,28 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class NewClass extends cc.Component {
 
     @property(cc.Node)
-    listCar:cc.Node = null;
+    listCar: cc.Node = null;
 
     @property(cc.Node)
-    handSwipe:cc.Node = null;
+    handSwipe: cc.Node = null;
 
     @property(cc.VideoPlayer)
-    video:cc.VideoPlayer = null;
+    video: cc.VideoPlayer = null;
 
     @property(cc.Node)
-    endCard:cc.Node = null;
+    endCard: cc.Node = null;
 
     @property(cc.Node)
-    linkToStore:cc.Node = null;
+    linkToStore: cc.Node = null;
 
     @property(cc.Node)
-    hand:cc.Node = null;
+    hand: cc.Node = null;
 
     // Thuộc tính cho tính năng vuốt
     private currentIndex: number = 0;
@@ -68,13 +68,16 @@ export default class NewClass extends cc.Component {
         this.node.off(cc.Node.EventType.TOUCH_CANCEL);
     }
 
-    eventVideo(video,event) {
-        if(event == cc.VideoPlayer.EventType.COMPLETED) {
+    eventVideo(video, event) {
+        if (event == cc.VideoPlayer.EventType.COMPLETED) {
             this.hand.active = false;
             this.handSwipe.active = false
             this.video.node.active = false;
             this.linkToStore.active = true;
-            cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).start();
+            cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).call(() => {
+                this.node.getChildByName('logo').active = false;
+                this.node.getChildByName('btnDownload').active = false;
+            }).start();
         }
     }
 
@@ -84,14 +87,14 @@ export default class NewClass extends cc.Component {
         // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         this.node.on(cc.Node.EventType.TOUCH_END, this.onCarTouchEnd, this);
         this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onCarTouchEnd, this);
-        
+
         // Gắn touch events cho từng node con trong listCar
         this.setupCarTouchEvents();
     }
 
     private setupCarTouchEvents() {
         if (!this.listCar || this.listCar.children.length === 0) return;
-        
+
         this.listCar.children.forEach((child, index) => {
             if (index < this.carPositions.length) {
                 // Bật touch cho từng car node
@@ -119,7 +122,7 @@ export default class NewClass extends cc.Component {
 
     private onCarSelected(carIndex: number) {
         console.log(`Car ${carIndex} selected!`);
-        
+
         // Chỉ xử lý nếu car được click đang ở vị trí x = 0 (giữa màn hình)
         if (carIndex === this.currentIndex) {
             console.log(`Car ${carIndex} is in center, executing action...`);
@@ -143,18 +146,18 @@ export default class NewClass extends cc.Component {
 
     private onTouchMove(event: cc.Event.EventTouch) {
         if (!this.isDragging) return;
-        
+
         this.lastTouchPos = event.getLocation();
-        
+
         // Tính khoảng cách di chuyển
         const deltaX = Math.abs(this.lastTouchPos.x - this.startTouchPos.x);
         const deltaY = Math.abs(this.lastTouchPos.y - this.startTouchPos.y);
         const minMoveThreshold = 20; // Khoảng cách tối thiểu để xem là swipe
-        
+
         // Nếu di chuyển đủ xa và chủ yếu theo trục X, coi là swipe gesture
         if (deltaX > minMoveThreshold && deltaX > deltaY) {
             this.isSwipeGesture = true;
-            
+
             // Ngăn chặn sự kiện click button khi đang swipe
             event.stopPropagation();
         }
@@ -162,21 +165,21 @@ export default class NewClass extends cc.Component {
 
     private onTouchEnd(event: cc.Event.EventTouch) {
         if (!this.isDragging) return;
-        
+
         this.isDragging = false;
         const touchDuration = Date.now() - this.touchStartTime;
         const deltaX = this.lastTouchPos.x - this.startTouchPos.x;
         const minSwipeDistance = 80; // Khoảng cách tối thiểu để xem là vuốt
         const maxClickDuration = 300; // Thời gian tối đa cho click (ms)
-        
+
         this.handSwipe.active = false;
         this.hand.active = true;
-        
+
         // Kiểm tra xem có phải là swipe gesture không
         if (this.isSwipeGesture && Math.abs(deltaX) > minSwipeDistance) {
             // Ngăn chặn sự kiện click button
             event.stopPropagation();
-            
+
             if (deltaX > 0) {
                 // Vuốt sang phải - chuyển về node trước
                 this.swipeToPrevious();
@@ -188,7 +191,7 @@ export default class NewClass extends cc.Component {
             // Đây là click ngắn, cho phép button xử lý
             // Không làm gì để button có thể nhận sự kiện
         }
-        
+
         // Reset trạng thái
         this.isSwipeGesture = false;
     }
@@ -225,17 +228,17 @@ export default class NewClass extends cc.Component {
 
     private moveCarsToCenter() {
         if (!this.listCar || this.listCar.children.length === 0) return;
-        
+
         // Di chuyển mượt mà tất cả các node con sử dụng tween
         this.listCar.children.forEach((child, index) => {
             if (index < this.carPositions.length) {
                 // Tính toán vị trí mới dựa trên index hiện tại
                 const targetX = child.x - 700;
-                
+
                 // Sử dụng cc.tween để tạo hiệu ứng di chuyển mượt mà
                 cc.tween(child)
-                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' }).call(()=>{
-                        if(child.x < -700) {
+                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' }).call(() => {
+                        if (child.x < -700) {
                             child.x = child.x * -1;
                         }
                     })
@@ -262,7 +265,7 @@ export default class NewClass extends cc.Component {
         canvas.fitHeight = (isHorizontal) ? true : false;
         canvas.fitWidth = (isHorizontal) ? false : true;
     }
-    
+
     responsive() {
         let deviceResolution = cc.view.getFrameSize();
         if (deviceResolution.width >= deviceResolution.height) {
@@ -272,7 +275,7 @@ export default class NewClass extends cc.Component {
             this.setScreenSize(false);
         }
     }
-    
+
     update(dt) {
         this.responsive();
     }
