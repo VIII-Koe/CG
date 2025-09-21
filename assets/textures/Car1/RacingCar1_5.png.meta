@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "ba75a5c8-5ae7-4bd6-a32b-53c0eaa9dbd0",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1024,
+  "height": 1024,
+  "platformSettings": {},
+  "subMetas": {
+    "RacingCar1_5": {
+      "ver": "1.0.6",
+      "uuid": "8456e8a1-9644-4887-9b3b-afcf8fbf211a",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "ba75a5c8-5ae7-4bd6-a32b-53c0eaa9dbd0",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -14,
+      "offsetY": 5.5,
+      "trimX": 5,
+      "trimY": 116,
+      "width": 986,
+      "height": 781,
+      "rawWidth": 1024,
+      "rawHeight": 1024,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -29,6 +29,9 @@ export default class NewClass extends cc.Component {
     carScene2: cc.Node = null;
 
     @property(cc.Node)
+    carScene2Icon: cc.Node[] = [];
+
+    @property(cc.Node)
     shadowScene2: cc.Node = null;
 
     @property(cc.Label)
@@ -41,7 +44,10 @@ export default class NewClass extends cc.Component {
     moneyPrefab: cc.Prefab = null;
 
     @property(cc.Node)
-    carIconList: cc.Node[] = [];
+    carIconList1: cc.Node[] = [];
+
+    @property(cc.Node)
+    carIconList2: cc.Node[] = [];
 
     @property(cc.Node)
     cleanItem: cc.Node = null;
@@ -66,6 +72,12 @@ export default class NewClass extends cc.Component {
 
     @property(cc.Node)
     touchNode2: cc.Node = null;
+
+    @property(cc.Node)
+    touchNode1: cc.Node = null;
+
+    @property(cc.Node)
+    touchNode12: cc.Node = null;
 
     @property(cc.Node)
     btnUpgrade: cc.Node = null;
@@ -143,9 +155,15 @@ export default class NewClass extends cc.Component {
 
     isUpgrade: boolean = false;
 
+    isBuyCar: boolean = false;
+
     guideLbArr = ['Clean the car first', 'Nice!', 'Now let\'s polish the car', 'That\'s great!', 'Next, upgrade the car', 'Perfect!'];
 
     stepGuide: number = 0;
+
+    carIndex: number = 0;
+
+    carIconList: cc.Node[] = [];
 
     // Variables for scratch ticket functionality
     private scratchTicket: Scratch_ticket = null;
@@ -154,15 +172,6 @@ export default class NewClass extends cc.Component {
     private hasCompletedPolishing: boolean = false;
     private hasCompletedUpgrade: boolean = false;
 
-    // Thuộc tính cho tính năng vuốt
-    private currentIndex: number = 0;
-    private isDragging: boolean = false;
-    private startTouchPos: cc.Vec2 = cc.Vec2.ZERO;
-    private lastTouchPos: cc.Vec2 = cc.Vec2.ZERO;
-    private carPositions: number[] = [0, 450, 900, 1350, 1800];
-    private isSwipeGesture: boolean = false;
-    private touchStartTime: number = 0;
-    private countMove = 0;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -170,219 +179,10 @@ export default class NewClass extends cc.Component {
 
     start() {
         cc.audioEngine.play(this.bgSound, true, 0.5);
-        // this.startScene1();
-        this.initSwipeFeature();
+        // this.startScene2();
+        // this.initSwipeFeature();
 
         // Setup scratch ticket component
-        if (this.touchNode) {
-            this.scratchTicket = this.touchNode.getComponent(Scratch_ticket);
-        }
-        if (this.touchNode2) {
-            this.scratchTicket2 = this.touchNode2.getComponent(Scratch_ticket);
-        }
-
-        this.schedule(() => {
-            this.currentIndex++;
-            if (this.currentIndex >= this.carPositions.length) {
-                this.currentIndex = 0;
-            }
-            this.moveCarsToCenter();
-        }, 1.5, cc.macro.REPEAT_FOREVER, 1)
-
-        // Setup canvas touch events for cleanItem movement
-        // this.setupCanvasTouchEvents();
-    }
-
-    private initSwipeFeature() {
-        // Bật touch events cho node chính (cho swipe)
-        this.scene0.on(cc.Node.EventType.TOUCH_START, this.onCarTouchStart, this);
-        // this.scene0.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        this.scene0.on(cc.Node.EventType.TOUCH_END, this.onCarTouchEnd, this);
-        this.scene0.on(cc.Node.EventType.TOUCH_CANCEL, this.onCarTouchEnd, this);
-
-        // Gắn touch events cho từng node con trong listCar
-        // this.setupCarTouchEvents();
-    }
-
-    private setupCarTouchEvents() {
-        if (!this.listCar || this.listCar.children.length === 0) return;
-
-        this.listCar.children.forEach((child, index) => {
-            if (index < this.carPositions.length) {
-                // Bật touch cho từng car node
-                child.on(cc.Node.EventType.TOUCH_START, (event) => this.onCarTouchStart(event, index), this);
-                child.on(cc.Node.EventType.TOUCH_END, (event) => this.onCarTouchEnd(event, index), this);
-            }
-        });
-    }
-
-    private onCarTouchStart(event: cc.Event.EventTouch, carIndex: number) {
-        // Ghi nhận touch start cho car cụ thể
-        this.touchStartTime = Date.now();
-        console.log(`Car ${carIndex} touch start`);
-    }
-
-    private onCarTouchEnd(event: cc.Event.EventTouch, carIndex: number) {
-        const touchDuration = Date.now() - this.touchStartTime;
-        const maxClickDuration = 300; // Thời gian tối đa cho click (ms)
-        this.selectCar();
-        // Chỉ xử lý click nếu thời gian touch ngắn và không có swipe gesture
-        // if (touchDuration < maxClickDuration && !this.isSwipeGesture) {
-        // this.onCarSelected(carIndex);
-        // }
-    }
-
-    private onCarSelected(carIndex: number) {
-        console.log(`Car ${carIndex} selected!`);
-
-        // Chỉ xử lý nếu car được click đang ở vị trí x = 0 (giữa màn hình)
-        if (carIndex === this.currentIndex) {
-            console.log(`Car ${carIndex} is in center, executing action...`);
-            // Thực hiện hành động khi click vào car ở giữa
-            this.selectCar();
-        } else {
-            // Nếu click vào car khác, di chuyển car đó về giữa
-            console.log(`Moving car ${carIndex} to center...`);
-            this.currentIndex = carIndex;
-            this.moveCarsToCenter();
-        }
-    }
-
-    private onTouchStart(event: cc.Event.EventTouch) {
-        this.isDragging = true;
-        this.startTouchPos = event.getLocation();
-        this.lastTouchPos = this.startTouchPos;
-        this.isSwipeGesture = false;
-        this.touchStartTime = Date.now();
-    }
-
-    private onTouchMove(event: cc.Event.EventTouch) {
-        if (!this.isDragging) return;
-
-        this.lastTouchPos = event.getLocation();
-
-        // Tính khoảng cách di chuyển
-        const deltaX = Math.abs(this.lastTouchPos.x - this.startTouchPos.x);
-        const deltaY = Math.abs(this.lastTouchPos.y - this.startTouchPos.y);
-        const minMoveThreshold = 20; // Khoảng cách tối thiểu để xem là swipe
-
-        // Nếu di chuyển đủ xa và chủ yếu theo trục X, coi là swipe gesture
-        if (deltaX > minMoveThreshold && deltaX > deltaY) {
-            this.isSwipeGesture = true;
-
-            // Ngăn chặn sự kiện click button khi đang swipe
-            event.stopPropagation();
-        }
-    }
-
-    private onTouchEnd(event: cc.Event.EventTouch) {
-        if (!this.isDragging) return;
-
-        this.isDragging = false;
-        const touchDuration = Date.now() - this.touchStartTime;
-        const deltaX = this.lastTouchPos.x - this.startTouchPos.x;
-        const minSwipeDistance = 80; // Khoảng cách tối thiểu để xem là vuốt
-        const maxClickDuration = 300; // Thời gian tối đa cho click (ms)
-
-        this.handSwipe.active = false;
-        this.hand.active = true;
-
-        // Kiểm tra xem có phải là swipe gesture không
-        if (this.isSwipeGesture && Math.abs(deltaX) > minSwipeDistance) {
-            // Ngăn chặn sự kiện click button
-            event.stopPropagation();
-
-            if (deltaX > 0) {
-                // Vuốt sang phải - chuyển về node trước
-                this.swipeToPrevious();
-            } else {
-                // Vuốt sang trái - chuyển đến node tiếp theo
-                this.swipeToNext();
-            }
-        } else if (!this.isSwipeGesture && touchDuration < maxClickDuration) {
-            // Đây là click ngắn, cho phép button xử lý
-            // Không làm gì để button có thể nhận sự kiện
-        }
-
-        // Reset trạng thái
-        this.isSwipeGesture = false;
-    }
-
-    private swipeToNext() {
-        if (this.currentIndex < this.carPositions.length - 1) {
-            this.currentIndex++;
-            this.moveCarsToCenter();
-        }
-    }
-
-    private swipeToPrevious() {
-        if (this.currentIndex > 0) {
-            this.currentIndex--;
-            this.moveCarsToCenter();
-        }
-    }
-
-    private setupCarPositions() {
-        // Thiết lập vị trí ban đầu cho các node con
-        if (this.listCar && this.listCar.children.length > 0) {
-            this.listCar.children.forEach((child, index) => {
-                if (index < this.carPositions.length) {
-                    child.setPosition(this.carPositions[index], child.position.y);
-                }
-            });
-        }
-    }
-
-    private centerCurrentCar() {
-        if (!this.listCar || this.listCar.children.length === 0) return;
-        this.moveCarsToCenter();
-    }
-
-    private moveCarsToCenter() {
-        if (!this.listCar || this.listCar.children.length === 0) return;
-        // cc.audioEngine.play(this.swipeSound, false, 1);
-        // Di chuyển mượt mà tất cả các node con sử dụng tween
-        this.listCar.children.forEach((child, index) => {
-            if (index < this.carPositions.length) {
-                // Tính toán vị trí mới dựa trên index hiện tại
-                let targetX = child.x - 450;
-                // Sử dụng cc.tween để tạo hiệu ứng di chuyển mượt mà
-                cc.tween(child)
-                    .to(0.4, { position: cc.v3(targetX, child.position.y, child.position.z) }, { easing: 'backOut' }).call(() => {
-                        if (child.x < -450) {
-                            child.x = child.x * -1 + 450;
-                        }
-                    })
-                    .start();
-            }
-        });
-    }
-
-    // Hàm để chuyển đến node con cụ thể (có thể gọi từ UI)
-    public goToCar(index: number) {
-        if (index >= 0 && index < this.carPositions.length) {
-            this.currentIndex = index;
-            this.moveCarsToCenter();
-        }
-    }
-
-    // Hàm để lấy index hiện tại
-    public getCurrentCarIndex(): number {
-        return this.currentIndex;
-    }
-
-    selectCar() {
-        cc.audioEngine.play(this.clickSound, false, 1);
-        this.listCar.active = false;
-        this.hand.active = false;
-        this.carScene1.parent.active = true;
-        this.scene0.active = false;
-        this.startScene1();
-        this.scene0.off(cc.Node.EventType.TOUCH_START);
-        this.scene0.off(cc.Node.EventType.TOUCH_MOVE);
-        this.scene0.off(cc.Node.EventType.TOUCH_END);
-        this.scene0.off(cc.Node.EventType.TOUCH_CANCEL);
-        this.setupCanvasTouchEvents();
     }
 
     setupCanvasTouchEvents() {
@@ -500,7 +300,11 @@ export default class NewClass extends cc.Component {
         }).start();
     }
 
-    buyCar1() {
+    buyCar1(event, customEventData) {
+        if (this.isBuyCar) return;
+        this.isBuyCar = true;
+        this.carIndex = parseInt(customEventData);
+        this.carScene1 = event.target;
         // Trigger money effect from (-68,11) to (-266,492)
         cc.audioEngine.play(this.clickSound, false, 1);
         this.btnBuy1.active = false;
@@ -509,6 +313,12 @@ export default class NewClass extends cc.Component {
         // Convert carScene1 position to world space, then to moneyLabel's parent space
         let worldPos = this.carScene1.parent.convertToWorldSpaceAR(this.carScene1.position.add(cc.v3(0, 80)));
         let targetPos = this.moneyLabel.node.parent.convertToNodeSpaceAR(worldPos);
+        this.carScene1.parent.getChildByName('hand').active = false;
+        this.carScene1.parent.getComponent(cc.Animation).stop();
+        this.carScene1.parent.getChildByName('car0').scale = 1;
+        this.carScene1.parent.getChildByName('car1').scale = 1;
+        this.carScene2 = this.carScene2Icon[this.carIndex];
+        this.priceCar = (this.carIndex == 0) ? 5000 : 4000;
         this.moveMoney(cc.v3(-68, 11, 0), targetPos, 10);
     }
 
@@ -547,7 +357,7 @@ export default class NewClass extends cc.Component {
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
                     if (this.money == 5000 && this.carScene1.parent.active == true) {
-                        cc.tween(this.carScene1).delay(0.25).to(0.5, { position: cc.v3(600, -350, 0) }).call(() => {
+                        cc.tween(this.carScene1).delay(0.25).by(0.5, { position: cc.v3(500, -500, 0) }).call(() => {
                             this.startScene2();
                         }).start();
                     }
@@ -604,7 +414,7 @@ export default class NewClass extends cc.Component {
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
                     if (this.money == 5000 && this.carScene1.parent.active == true) {
-                        cc.tween(this.carScene1).delay(0.25).to(0.5, { position: cc.v3(600, -350, 0) }).call(() => {
+                        cc.tween(this.carScene1).delay(0.25).by(0.5, { position: cc.v3(500, -500, 0) }).call(() => {
                             this.startScene2();
                         }).start();
                     }
@@ -628,10 +438,19 @@ export default class NewClass extends cc.Component {
     }
 
     startScene2() {
+        if (this.touchNode) {
+            this.scratchTicket = (this.carIndex == 0) ? this.touchNode.getComponent(Scratch_ticket) : this.touchNode1.getComponent(Scratch_ticket);
+        }
+        if (this.touchNode2) {
+            this.scratchTicket2 = (this.carIndex == 0) ? this.touchNode2.getComponent(Scratch_ticket) : this.touchNode12.getComponent(Scratch_ticket);
+        }
+        // Setup canvas touch events for cleanItem movement
+        this.setupCanvasTouchEvents();
+        this.carIconList = (this.carIndex == 0) ? this.carIconList1 : this.carIconList2;
         this.carScene1.parent.active = false;
         this.carScene2.parent.active = true;
         cc.audioEngine.play(this.carSound, false, 1);
-        cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-15, 70, 0) }).delay(0.25).call(() => {
+        cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-20, 37, 0) }).delay(0.25).call(() => {
             this.carScene2.getChildByName('bid').active = true;
             let listBtn = this.carScene2.parent.getChildByName('listBtn');
             cc.tween(listBtn).set({ active: true, scaleY: 0 }).to(0.2, { scaleY: 1 }).call(() => {
@@ -770,6 +589,7 @@ export default class NewClass extends cc.Component {
         let btn = event.target;
         btn.getChildByName('shadow').active = true;
         this.carIconList[this.step].active = false;
+        this.carIconList[3].active = true;
         this.btnUpgrade.getChildByName('hand').active = false;
         this.showGuide(0.75);
         cc.audioEngine.play(this.upgradeSound, false, 1);
@@ -827,6 +647,7 @@ export default class NewClass extends cc.Component {
         this.isUpgrade = false;
 
         this.carIconList[this.step].active = false;
+        this.carIconList[3].active = true;
         this.btnUpgrade.getChildByName('hand').active = false;
         this.btnUpgrade.getComponent(cc.Button).enabled = false;
         this.btnUpgrade.getChildByName('shadow').active = true;
