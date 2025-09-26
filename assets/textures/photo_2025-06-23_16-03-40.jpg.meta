@@ -1,6 +1,7 @@
 {
-  "ver": "2.3.5",
+  "ver": "2.3.7",
   "uuid": "e80f0e5b-d7b2-427d-b78e-1b86203a82b5",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -12,8 +13,9 @@
   "platformSettings": {},
   "subMetas": {
     "photo_2025-06-23_16-03-40": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "693921d9-e07d-43f2-a4ee-678280ded9fb",
+      "importer": "sprite-frame",
       "rawTextureUuid": "e80f0e5b-d7b2-427d-b78e-1b86203a82b5",
       "trimType": "auto",
       "trimThreshold": 1,

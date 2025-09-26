@@ -1,6 +1,7 @@
 {
-  "ver": "2.3.5",
+  "ver": "2.3.7",
   "uuid": "f3063c19-a560-44e5-81f0-df48f2645926",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -12,8 +13,9 @@
   "platformSettings": {},
   "subMetas": {
     "Manager_Sell_icon": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "0246fc10-5d71-4ca5-a503-352918d4be7d",
+      "importer": "sprite-frame",
       "rawTextureUuid": "f3063c19-a560-44e5-81f0-df48f2645926",
       "trimType": "auto",
       "trimThreshold": 1,

@@ -1,8 +1,8 @@
 {
   "engine": "cocos-creator-js",
   "packages": "packages",
-  "name": "Idle_Car_2",
+  "name": "FG22_2",
   "id": "e2ef245e-af97-4fac-bd8c-ef4a07588251",
-  "version": "2.4.5",
+  "version": "2.4.10",
   "isNew": false
 }
