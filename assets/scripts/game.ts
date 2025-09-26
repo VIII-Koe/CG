@@ -683,7 +683,7 @@ export default class NewClass extends cc.Component {
         }
     }
     update(dt) {
-        this.responsive();
+        cc.view.setDesignResolutionSize(720, 1280, cc.ResolutionPolicy.SHOW_ALL);
         
         // Check scratch ticket progress for cleaning step
         if (this.step === 0 && this.isClean && this.scratchTicket && !this.hasCompletedCleaning) {

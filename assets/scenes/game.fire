@@ -313,7 +313,7 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        0,
+        -64.509,
         0,
         0,
         0,
@@ -12459,7 +12459,7 @@
     "node": {
       "__id__": 38
     },
-    "_enabled": true,
+    "_enabled": false,
     "alignMode": 1,
     "_target": null,
     "_alignFlags": 45,
@@ -12864,7 +12864,7 @@
     "node": {
       "__id__": 272
     },
-    "_enabled": true,
+    "_enabled": false,
     "alignMode": 1,
     "_target": null,
     "_alignFlags": 1,
@@ -13920,7 +13920,7 @@
     "node": {
       "__id__": 302
     },
-    "_enabled": true,
+    "_enabled": false,
     "alignMode": 1,
     "_target": null,
     "_alignFlags": 1,
@@ -14313,7 +14313,7 @@
     "node": {
       "__id__": 305
     },
-    "_enabled": true,
+    "_enabled": false,
     "alignMode": 1,
     "_target": null,
     "_alignFlags": 1,
