@@ -36,6 +36,10 @@ export default class NewClass extends cc.Component {
     private carPositions: number[] = [0, 700, 1400, 2100];
     private isSwipeGesture: boolean = false;
     private touchStartTime: number = 0;
+    
+    // Thuộc tính cho enemy và unit
+    private enemyStartY: number[][] = []; // Lưu vị trí Y xuất phát của enemy
+    private unitStartY: number[][] = []; // Lưu vị trí Y xuất phát của unit
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -48,6 +52,7 @@ export default class NewClass extends cc.Component {
         // this.centerCurrentCar();
         // Gọi lại để đảm bảo touch events được gắn đúng cách
         this.setupCarTouchEvents();
+        this.saveEnemyUnitStartPositions();
         this.schedule(() => {
             this.currentIndex++;
             if (this.currentIndex >= this.carPositions.length) {
@@ -226,6 +231,32 @@ export default class NewClass extends cc.Component {
         this.moveCarsToCenter();
     }
 
+    private saveEnemyUnitStartPositions() {
+        if (!this.listCar || this.listCar.children.length === 0) return;
+        
+        // Lưu vị trí Y xuất phát của enemy và unit trong mỗi car
+        this.listCar.children.forEach((car, carIndex) => {
+            this.enemyStartY[carIndex] = [];
+            this.unitStartY[carIndex] = [];
+            
+            // Tìm enemy nodes
+            const enemies = car.getChildByName('enemy');
+            if (enemies) {
+                enemies.children.forEach((enemy, enemyIndex) => {
+                    this.enemyStartY[carIndex][enemyIndex] = enemy.y;
+                });
+            }
+            
+            // Tìm unit nodes
+            const units = car.getChildByName('unit');
+            if (units) {
+                units.children.forEach((unit, unitIndex) => {
+                    this.unitStartY[carIndex][unitIndex] = unit.y;
+                });
+            }
+        });
+    }
+
     private moveCarsToCenter() {
         if (!this.listCar || this.listCar.children.length === 0) return;
 
@@ -241,10 +272,41 @@ export default class NewClass extends cc.Component {
                         if (child.x < -700) {
                             child.x = child.x * -1;
                         }
+                        
+                        // Kiểm tra nếu xe này đang ở vị trí x = 0 (giữa màn hình)
+                        if (Math.abs(child.x) < 50) { // Tolerance cho vị trí x = 0
+                            this.moveEnemyUnitToStart(child, index);
+                        }
                     })
                     .start();
             }
         });
+    }
+
+    private moveEnemyUnitToStart(car: cc.Node, carIndex: number) {
+        // Di chuyển enemy về vị trí xuất phát
+        const enemies = car.getChildByName('enemy');
+        if (enemies && this.enemyStartY[carIndex]) {
+            enemies.children.forEach((enemy, enemyIndex) => {
+                if (this.enemyStartY[carIndex][enemyIndex] !== undefined) {
+                    cc.tween(enemy)
+                        .to(0.3, { position: cc.v3(enemy.x, this.enemyStartY[carIndex][enemyIndex], enemy.z) }, { easing: 'sineOut' })
+                        .start();
+                }
+            });
+        }
+        
+        // Di chuyển unit về vị trí xuất phát
+        const units = car.getChildByName('unit');
+        if (units && this.unitStartY[carIndex]) {
+            units.children.forEach((unit, unitIndex) => {
+                if (this.unitStartY[carIndex][unitIndex] !== undefined) {
+                    cc.tween(unit)
+                        .to(0.3, { position: cc.v3(unit.x, this.unitStartY[carIndex][unitIndex], unit.z) }, { easing: 'sineOut' })
+                        .start();
+                }
+            });
+        }
     }
 
     // Hàm để chuyển đến node con cụ thể (có thể gọi từ UI)

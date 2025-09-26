@@ -11,7 +11,13 @@ import Scratch_ticket from './Scratch_ticket';
 export default class NewClass extends cc.Component {
 
     @property(cc.Node)
-    listCar: cc.Node = null;
+    container1:cc.Node = null;
+
+    @property(cc.Node)
+    container2:cc.Node = null;
+
+    @property(cc.Node)
+    mainCamera: cc.Node = null;
 
     @property(cc.Node)
     handSwipe: cc.Node = null;
@@ -103,6 +109,15 @@ export default class NewClass extends cc.Component {
     @property(cc.Node)
     endCard: cc.Node = null;
 
+    @property(cc.Node)
+    saleNode: cc.Node = null;
+
+    @property(cc.Node)
+    bubleBuy: cc.Node = null;
+
+    @property(cc.Node)
+    salerNode: cc.Node = null;
+
     @property(cc.AudioClip)
     bgSound: cc.AudioClip = null;
 
@@ -139,7 +154,7 @@ export default class NewClass extends cc.Component {
 
     step: number = 0;
 
-    money: number = 10000;
+    money: number = 7000;
 
     fadePct: number = 0;
 
@@ -179,6 +194,8 @@ export default class NewClass extends cc.Component {
 
     start() {
         cc.audioEngine.play(this.bgSound, true, 0.5);
+        this.startScene1();
+        // this.upgradeCar(null);
         // this.startScene2();
         // this.initSwipeFeature();
 
@@ -294,10 +311,19 @@ export default class NewClass extends cc.Component {
 
     startScene1() {
         cc.audioEngine.play(this.carSound, false, 1);
-        cc.tween(this.carScene1).set({ position: cc.v3(-600, 350, 0), active: true }).to(0.7, { position: cc.v3(-32, 64, 0) }).delay(0.15).call(() => {
-            this.carScene1.getChildByName('buble').active = true;
-            this.btnBuy1.active = true;
+        cc.tween(this.container1).to(0.5,{position:cc.v3(-95,200)}).start();
+        cc.tween(this.container2).to(0.5,{position:cc.v3(-95,200)}).delay(0.25).call(()=>{
+            cc.tween(this.mainCamera).to(0.5,{position:cc.v3(0,0,0)}).start();
+            cc.tween(this.mainCamera.getComponent(cc.Camera)).to(0.5,{zoomRatio:1}).call(()=>{
+                cc.tween(this.container2).to(0.5,{opacity:0}).call(()=>{
+                    this.carScene1.parent.getComponent(cc.Animation).play();
+                }).start();
+            }).start();
         }).start();
+        // cc.tween(this.carScene1).set({ position: cc.v3(-600, 350, 0), active: true }).to(0.7, { position: cc.v3(-32, 64, 0) }).delay(0.15).call(() => {
+        //     this.carScene1.getChildByName('buble').active = true;
+        //     this.btnBuy1.active = true;
+        // }).start();
     }
 
     buyCar1(event, customEventData) {
@@ -356,10 +382,10 @@ export default class NewClass extends cc.Component {
                 }
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
-                    if (this.money == 5000 && this.carScene1.parent.active == true) {
-                        cc.tween(this.carScene1).delay(0.25).by(0.5, { position: cc.v3(500, -500, 0) }).call(() => {
+                    if (this.money == 2000 && this.carScene1.parent.active == true) {
+                        // cc.tween(this.carScene1).delay(0.25).by(0.5, { position: cc.v3(500, -500, 0) }).call(() => {
                             this.startScene2();
-                        }).start();
+                        // }).start();
                     }
                 }
             }).start();
@@ -413,10 +439,10 @@ export default class NewClass extends cc.Component {
                 }
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
-                    if (this.money == 5000 && this.carScene1.parent.active == true) {
-                        cc.tween(this.carScene1).delay(0.25).by(0.5, { position: cc.v3(500, -500, 0) }).call(() => {
+                    if (this.money == 2000 && this.carScene1.parent.active == true) {
+                        // cc.tween(this.carScene1).delay(0.25).by(0.5, { position: cc.v3(500, -500, 0) }).call(() => {
                             this.startScene2();
-                        }).start();
+                        // }).start();
                     }
                 }
             })
@@ -581,60 +607,6 @@ export default class NewClass extends cc.Component {
         this.step++;
 
     }
-    upgradeCar(event: cc.Event.EventTouch) {
-        cc.audioEngine.play(this.clickSound, false, 1);
-        this.shadowScene2.active = false;
-        this.carScene2.getChildByName('upgrade').active = true;
-        this.moveBid(2000);
-        let btn = event.target;
-        btn.getChildByName('shadow').active = true;
-        this.carIconList[this.step].active = false;
-        this.carIconList[3].active = true;
-        this.btnUpgrade.getChildByName('hand').active = false;
-        this.showGuide(0.75);
-        cc.audioEngine.play(this.upgradeSound, false, 1);
-        this.scheduleOnce(() => {
-            cc.tween(this.btnClean.parent).to(0.2, { scaleY: 0 }).call(() => {
-                this.btnClean.parent.active = false;
-            }).start();
-            let bid = this.carScene2.getChildByName('bid');
-            let buble = this.carScene2.getChildByName('buble');
-            let aurora = this.carScene2.getChildByName('aura');
-            let title = this.carScene2.getChildByName('title');
-            this.shadowScene2.active = true;
-            cc.tween(bid).to(0.2, { scaleY: 0 }).call(() => {
-                bid.active = false;
-            }).start();
-            aurora.active = true;
-            cc.tween(title).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).start();
-            cc.tween(buble).to(0.2, { scaleY: 1 }).delay(1).call(() => {
-                this.listCustomer.active = true;
-                title.active = false;
-                cc.audioEngine.play(this.customerSound, false, 1);
-                this.listCustomer.children.forEach((child, index) => {
-                    child.active = true;
-                    cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
-                });
-            }).start();
-            this.scheduleOnce(() => {
-                this.carScene2.getChildByName('buble').active = false;
-                this.step = 3;
-                this.moveMoney(cc.v3(-266, -492, 0), cc.v3(-68, 11, 0), 10);
-                this.scheduleOnce(() => {
-                    this.saleAnim.active = true;
-                    this.listCustomer.active = false;
-                    cc.audioEngine.play(this.saleSound, false, 1);
-                }, 0.5);
-                this.scheduleOnce(() => {
-                    cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).call(() => {
-                        this.node.getChildByName('logo').active = false;
-                        this.node.getChildByName('btnDownload').active = false;
-                    }).start();
-                }, 2.5);
-            }, 4);
-        }, 1);
-
-    }
 
     triggerUpgrade() {
         cc.audioEngine.play(this.clickSound, false, 1);
@@ -665,33 +637,59 @@ export default class NewClass extends cc.Component {
             cc.tween(bid).to(0.2, { scaleY: 0 }).call(() => {
                 bid.active = false;
             }).start();
-            aurora.active = true;
+            // aurora.active = true;
             cc.tween(title).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).start();
             cc.tween(buble).to(0.2, { scaleY: 1 }).delay(1).call(() => {
-                this.listCustomer.active = true;
+                let car = this.saleNode.getChildByName('listCar').children[this.carIndex];
+                this.saleNode.active = true;
+                cc.tween(car).set({active:true,y:750}).to(0.25,{y:150}).call(()=>{
+                    car.getChildByName('aura').active = true;
+                    cc.tween(this.salerNode).set({active:true}).to(0.35,{y:-350}).call(()=>{
+                        this.bubleBuy.active = true;
+                        let dot = this.bubleBuy.getChildByName('dot').getComponent(cc.Label);
+                        dot.node.active = true;
+                        this.scheduleOnce(()=>{
+                            dot.string = '.';
+                        },0.1);
+                        this.scheduleOnce(()=>{
+                            dot.string = '. .';
+                        },0.4);
+                        this.scheduleOnce(()=>{
+                            dot.string = '. . .';
+                        },0.7);
+                        this.scheduleOnce(()=>{
+                            this.bubleBuy.getChildByName('money').active = true;
+                            this.bubleBuy.getChildByName('moneylb').active = true;
+                            dot.node.active = false;
+                        },1.1);
+                        this.scheduleOnce(()=>{
+                            this.saleAnim.active = true;
+                            cc.audioEngine.play(this.saleSound, false, 1);
+                            cc.audioEngine.play(this.customerSound, false, 1);
+                        },1.4);
+                    }).start();
+                }).start();
+                // this.listCustomer.active = true;
                 title.active = false;
-                cc.audioEngine.play(this.customerSound, false, 1);
-                this.listCustomer.children.forEach((child, index) => {
-                    child.active = true;
-                    cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
-                });
+                // this.listCustomer.children.forEach((child, index) => {
+                //     child.active = true;
+                //     cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
+                // });
             }).start();
             this.scheduleOnce(() => {
                 this.carScene2.getChildByName('buble').active = false;
                 this.step = 3;
                 this.moveMoney(cc.v3(-266, -492, 0), cc.v3(-68, 11, 0), 10);
                 this.scheduleOnce(() => {
-                    this.saleAnim.active = true;
-                    this.listCustomer.active = false;
-                    cc.audioEngine.play(this.saleSound, false, 1);
+                    // this.listCustomer.active = false;
                 }, 0.5);
                 this.scheduleOnce(() => {
                     cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).call(() => {
                         this.node.getChildByName('logo').active = false;
                         this.node.getChildByName('btnDownload').active = false;
                     }).start();
-                }, 2.5);
-            }, 4);
+                }, 2);
+            }, 3.5);
         }, 1);
     }
 
@@ -730,7 +728,7 @@ export default class NewClass extends cc.Component {
     }
     update(dt) {
         this.responsive();
-
+        cc.view.setDesignResolutionSize(720, 1280, cc.ResolutionPolicy.SHOW_ALL);
         // Check scratch ticket progress for cleaning step
         if (this.step === 0 && this.isClean && this.scratchTicket && !this.hasCompletedCleaning) {
             let progress = this.scratchTicket.progress;
