@@ -62,8 +62,9 @@
       "enable": false
     }
   },
-  "last-module-event-record-time": 1757318670701,
+  "last-module-event-record-time": 1758859364198,
   "migrate-history": [
     "cloud-function"
-  ]
+  ],
+  "start-scene": "43acb410-8d2c-4566-8655-9cc2b50616ce"
 }

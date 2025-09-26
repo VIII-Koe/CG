@@ -47,7 +47,7 @@ export default class NewClass extends cc.Component {
         // this.setupCarPositions();
         // this.centerCurrentCar();
         // Gọi lại để đảm bảo touch events được gắn đúng cách
-        this.setupCarTouchEvents();
+        // this.setupCarTouchEvents();
         this.schedule(() => {
             this.currentIndex++;
             if (this.currentIndex >= this.carPositions.length) {
@@ -83,10 +83,10 @@ export default class NewClass extends cc.Component {
 
     private initSwipeFeature() {
         // Bật touch events cho node chính (cho swipe)
-        this.node.on(cc.Node.EventType.TOUCH_START, this.onCarTouchStart, this);
-        // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        this.node.on(cc.Node.EventType.TOUCH_END, this.onCarTouchEnd, this);
-        this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onCarTouchEnd, this);
+        // this.node.on(cc.Node.EventType.TOUCH_START, this.onCarTouchStart, this);
+        // // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        // this.node.on(cc.Node.EventType.TOUCH_END, this.onCarTouchEnd, this);
+        // this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onCarTouchEnd, this);
 
         // Gắn touch events cho từng node con trong listCar
         this.setupCarTouchEvents();
@@ -277,6 +277,8 @@ export default class NewClass extends cc.Component {
     }
 
     update(dt) {
-        this.responsive();
+        // this.responsive();
+        cc.view.setDesignResolutionSize(720, 1280, cc.ResolutionPolicy.SHOW_ALL);
+
     }
 }
