@@ -109,12 +109,12 @@ export default class NewClass extends cc.Component {
     // onLoad () {}
 
     start() {
-        cc.audioEngine.play(this.bgSound,true,0.5);
+        cc.audioEngine.play(this.bgSound, true, 0.5);
         this.startScene1();
     }
 
     startScene1() {
-        cc.audioEngine.play(this.carSound,false,1);
+        cc.audioEngine.play(this.carSound, false, 1);
         cc.tween(this.carScene1).set({ position: cc.v3(-600, 350, 0), active: true }).to(0.7, { position: cc.v3(-32, 64, 0) }).delay(0.15).call(() => {
             this.carScene1.getChildByName('buble').active = true;
             this.btnBuy1.active = true;
@@ -123,7 +123,7 @@ export default class NewClass extends cc.Component {
 
     buyCar1() {
         // Trigger money effect from (-68,11) to (-266,492)
-        cc.audioEngine.play(this.clickSound,false,1);
+        cc.audioEngine.play(this.clickSound, false, 1);
         this.btnBuy1.active = false;
         this.carScene1.getChildByName('buble').active = false;
         this.moveMoney(cc.v3(-68, 11, 0), cc.v3(-196, -328, 0), 10);
@@ -216,7 +216,7 @@ export default class NewClass extends cc.Component {
                 if (moneyNode && moneyNode.isValid) {
                     moneyNode.stopAllActions();
                     moneyNode.destroy();
-                    
+
                 }
                 if (this.carScene1.parent.active == true || this.step == 3) {
                     this.addMoney((this.step == 3) ? 200 : -100);
@@ -231,14 +231,14 @@ export default class NewClass extends cc.Component {
     }
 
     addMoney(money: number) {
-        cc.audioEngine.play(this.moneySound,false,0.25);
+        cc.audioEngine.play(this.moneySound, false, 0.25);
         this.money += money;
         this.moneyLabel.string = this.money.toString();
     }
 
     addPriceCar(price: number) {
         this.priceCar += price;
-        if(this.priceCar > 10000){
+        if (this.priceCar > 10000) {
             this.priceCar = 10000;
         }
         this.carScene2.getChildByName('bid').getChildByName('moneylb').getComponent(cc.Label).string = this.priceCar.toString();
@@ -247,7 +247,7 @@ export default class NewClass extends cc.Component {
     startScene2() {
         this.carScene1.parent.active = false;
         this.carScene2.parent.active = true;
-        cc.audioEngine.play(this.carSound,false,1);
+        cc.audioEngine.play(this.carSound, false, 1);
         cc.tween(this.carScene2).set({ position: cc.v3(-625, 425, 0), active: true }).to(0.5, { position: cc.v3(-36, 50, 0) }).delay(0.25).call(() => {
             this.carScene2.getChildByName('bid').active = true;
             let listBtn = this.carScene2.parent.getChildByName('listBtn');
@@ -274,7 +274,7 @@ export default class NewClass extends cc.Component {
 
     actionCar(event: cc.Event.EventTouch) {
         if (this.isTransforming) return;
-        cc.audioEngine.play(this.clickSound,false,1);
+        cc.audioEngine.play(this.clickSound, false, 1);
         this.isTransforming = true;
         let btn = event.target;
         this.symbol = 1;
@@ -288,7 +288,7 @@ export default class NewClass extends cc.Component {
             btn.getChildByName('shadow').active = true;
             this.btnClean.getChildByName('hand').active = false;
             this.showGuide(0.75);
-            cc.audioEngine.play(this.cleanSound,false,1);
+            cc.audioEngine.play(this.cleanSound, false, 1);
         }
         if (this.step == 1) {
             this.carScene2.getChildByName('polishing').active = true;
@@ -297,11 +297,11 @@ export default class NewClass extends cc.Component {
             btn.getChildByName('shadow').active = true;
             this.btnPolishing.getChildByName('hand').active = false;
             this.showGuide(0.75);
-            cc.audioEngine.play(this.polishingSound,false,1);
+            cc.audioEngine.play(this.polishingSound, false, 1);
         }
     }
     upgradeCar(event: cc.Event.EventTouch) {
-        cc.audioEngine.play(this.clickSound,false,1);
+        cc.audioEngine.play(this.clickSound, false, 1);
         this.shadowScene2.active = false;
         this.carScene2.getChildByName('upgrade').active = true;
         this.moveBid(2000);
@@ -310,7 +310,7 @@ export default class NewClass extends cc.Component {
         this.carIconList[this.step].active = false;
         this.btnUpgrade.getChildByName('hand').active = false;
         this.showGuide(0.75);
-        cc.audioEngine.play(this.upgradeSound,false,1);
+        cc.audioEngine.play(this.upgradeSound, false, 1);
         this.scheduleOnce(() => {
             cc.tween(this.btnClean.parent).to(0.2, { scaleY: 0 }).call(() => {
                 this.btnClean.parent.active = false;
@@ -322,7 +322,7 @@ export default class NewClass extends cc.Component {
             }).start();
             cc.tween(buble).to(0.2, { scaleY: 1 }).call(() => {
                 this.listCustomer.active = true;
-                cc.audioEngine.play(this.customerSound,false,1);
+                cc.audioEngine.play(this.customerSound, false, 1);
                 this.listCustomer.children.forEach((child, index) => {
                     child.active = true;
                     cc.tween(child).set({ scale: 0, active: true }).to(0.25, { scale: 1 }).start();
@@ -332,17 +332,17 @@ export default class NewClass extends cc.Component {
                 this.carScene2.getChildByName('buble').active = false;
                 this.step = 3;
                 this.moveMoney(cc.v3(-266, -492, 0), cc.v3(-68, 11, 0), 10);
-                this.scheduleOnce(()=>{
+                this.scheduleOnce(() => {
                     this.saleAnim.active = true;
                     this.listCustomer.active = false;
-                    cc.audioEngine.play(this.saleSound,false,1);
-                },0.5);
-                this.scheduleOnce(()=>{
-                    cc.tween(this.endCard).set({active:true,scale:0}).to(0.2,{scale:1}).call(()=>{
+                    cc.audioEngine.play(this.saleSound, false, 1);
+                }, 0.5);
+                this.scheduleOnce(() => {
+                    cc.tween(this.endCard).set({ active: true, scale: 0 }).to(0.2, { scale: 1 }).call(() => {
                         this.node.getChildByName('logo').active = false;
                         this.node.getChildByName('btnDownload').active = false;
                     }).start();
-                },2.5);
+                }, 2.5);
             }, 3);
         }, 1.5);
 
@@ -379,7 +379,8 @@ export default class NewClass extends cc.Component {
         }
     }
     update(dt) {
-        this.responsive();
+        // this.responsive();
+        cc.view.setDesignResolutionSize(720, 1280, cc.ResolutionPolicy.SHOW_ALL);
         if (!this.isTransforming) return;
         this.carIconList[this.step].getComponent(cc.Sprite).getMaterial(0).setProperty('fade_pct', this.fadePct);
         if (this.fadePct >= 0 && this.fadePct <= 1) {
