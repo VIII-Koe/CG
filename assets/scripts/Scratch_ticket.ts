@@ -128,7 +128,7 @@ export default class Scratch_ticket extends cc.Component {
   polygonPointsList: { rect: cc.Rect; isHit: boolean }[] = [];
   reset() {
     let mask: any = this.maskNode.getComponent(cc.Mask);
-    mask._graphics.clear();
+    // mask._graphics.clear();
 
     this.tempDrawPoints = [];
     this.polygonPointsList = [];
